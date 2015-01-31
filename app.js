@@ -9,6 +9,7 @@ var instagram = require('instagram-node').instagram();
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
+var insta = require('./routes/insta');
 var models = require('./models');
 
 // Database
@@ -28,11 +29,6 @@ function db(req, res, next) {
 };
 
 // instagaram
-instagram.use({
-  client_id: Config.get("INSTA_CLIENT_ID"),
-  client_secret: Config.get("INSTA_CLIENT_SECRET")
-});
-
 function instaSetup(req, res, next){
     req.instagram = instagram;
     return next();
@@ -55,6 +51,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
 app.use('/users', instaSetup, db, users);
+app.use('/insta', instaSetup, db, users);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

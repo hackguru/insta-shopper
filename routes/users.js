@@ -1,6 +1,5 @@
 var express = require('express');
 var router = express.Router();
-var redirectUrl = Config.get("INST_CALLBACK_URL");
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
@@ -8,10 +7,30 @@ router.get('/', function(req, res, next) {
 });
 
 router.get('/auth/:type', function(req, res, next) {
-	res.redirect(req.instagram.get_authorization_url(redirectUrl, { state: req.params.type }));
+	var isBuyer = req.params.type != "merchant";
+	req.instagram.use({
+	  client_id: isBuyer ? Config.get("SHOPPER_INSTA_CLIENT_ID") : Config.get("MERCHANT_INSTA_CLIENT_ID"),
+	  client_secret: isBuyer ? Config.get("SHOPPER_INSTA_CLIENT_SECRET") : Config.get("MERCHANT_INSTA_CLIENT_SECRET")
+	});
+	var redirectUrl = isBuyer ? Config.get("SHOPPER_INST_CALLBACK_URL") : Config.get("MERCHANT_INST_CALLBACK_URL");
+	res.redirect(req.instagram.get_authorization_url(redirectUrl));
 });
 
-router.get('/insta-cb', function(req, res, next) {
+router.get('/insta-merchant-cb', function(req, res, next) {
+	authenticateUsers(req,res,next,false);
+});
+
+
+router.get('/insta-buyer-cb', function(req, res, next) {
+	authenticateUsers(req,res,next,true);
+});
+
+function authenticateUsers(req, res, next, isBuyer){
+	req.instagram.use({
+	  client_id: isBuyer ? Config.get("SHOPPER_INSTA_CLIENT_ID") : Config.get("MERCHANT_INSTA_CLIENT_ID"),
+	  client_secret: isBuyer ? Config.get("SHOPPER_INSTA_CLIENT_SECRET") : Config.get("MERCHANT_INSTA_CLIENT_SECRET")
+	});
+	var redirectUrl = isBuyer ? Config.get("SHOPPER_INST_CALLBACK_URL") : Config.get("MERCHANT_INST_CALLBACK_URL");
 	req.instagram.authorize_user(req.query.code, redirectUrl, function(err, result) {
 		if (err) {
 		  console.log(err.body);
@@ -25,7 +44,7 @@ router.get('/insta-cb', function(req, res, next) {
 			profilePicture: result.user.profile_picture,
 			username: result.user.username,
 			website: result.user.website,
-			type: req.query.state  	
+			type: isBuyer ? "buyer" : "merchant"  	
 		  }
 		  req.db.User.findOrCreate({instaId: result.user.id}, user, function(err, newUser) {
 		    console.log(newUser);
@@ -36,7 +55,7 @@ router.get('/insta-cb', function(req, res, next) {
 		    newUser.save();
 		  });
 		}
-	});
-});
+	});	
+}
 
 module.exports = router;
