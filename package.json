@@ -1,0 +1,25 @@
+{
+  "name": "instashopper",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www",
+    "debug": "node-debug ./bin/www",
+    "tasks": "node ./tasks/start.js"
+  },
+  "dependencies": {
+    "body-parser": "~1.10.2",
+    "cookie-parser": "~1.3.3",
+    "debug": "~2.1.1",
+    "express": "~4.11.1",
+    "jade": "~1.9.1",
+    "morgan": "~1.5.1",
+    "serve-favicon": "~2.2.0",
+    "cron": "*",
+    "request": "*",
+    "nconf": "*",
+    "mongoose": "*",
+    "mongoose-findorcreate": "*",
+    "instagram-node": "*"
+  }
+}
