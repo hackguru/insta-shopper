@@ -1,6 +1,0 @@
-{
-    "INSTA_CLIENT_ID": "3d6dcdc4d84a4554b96086974e5e641b",
-    "INSTA_CLIENT_SECRET": "fb68779e9f9c462fb28a3bf1166201ea",
-    "INST_CALLBACK_URL": "http://localhost:3000/users/insta-cb",
-    "Db_CONNECTION_STRING": "mongodb://localhost/insta-shopper"
-}
