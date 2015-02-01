@@ -8,7 +8,7 @@ router.get('/post', function(req, res, next) {
 });
 
 router.post('/post', function(req, res, next) {
-	console.log(req);
+	console.log(req.body.data);
 	res.send('respond with a resource');
 });
 
