@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 
 router.get('/auth/:type/:device/:regId', function(req, res, next) {
-	if(!req.params.type || !req.params.device || !req.params.reqId){
+	if(!req.params.type || !req.params.device || !req.params.regId){
 		res.send("no good");
 		//TODO: right error code!
 		return;
