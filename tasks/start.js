@@ -46,11 +46,12 @@ new CronJob('*/'+Config.get("WORKER_RUN_INTERVAL_SECONDS")+' * * * * *', functio
 													method: "POST",
 													headers: {Authorization:("key="+Config.get("GCM_API_KEY"))},
 													json: {
-													  "registration_ids" : [user.buyerRegisterationIds.androidIds[0]],
+													  "registration_ids" : user.buyerRegisterationIds.androidIds,
 													  "data" : {
 													   	imageUrl: mediaFromDB.images.low_resolution.url,
 													   	text: "The item you likde is available for sale!",
-													   	productId: "kirekhar"
+													   	productLink: mediaFromDB.linkToProduct,
+													   	linkSrceenShot: mediaFromDB.linkToProduct
 													  }
 													}
 												},

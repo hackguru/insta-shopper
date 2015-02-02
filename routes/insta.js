@@ -46,7 +46,7 @@ router.post('/post', function(req, res, next) {
 									method: "POST",
 									headers: {Authorization:("key="+Config.get("GCM_API_KEY"))},
 									json: {
-									  "registration_ids" : [user.merchantRegisterationIds.androidIds[0]],
+									  "registration_ids" : user.merchantRegisterationIds.androidIds,
 									  "data" : {
 									   	imageUrl: toBeSavedMedia.images.low_resolution.url,
 									   	text: "Do you wanna add a link for this product?",

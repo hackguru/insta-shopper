@@ -2,6 +2,11 @@ var express = require('express');
 var router = express.Router();
 
 router.get('/auth/:type/:device/:regId', function(req, res, next) {
+	if(!req.params.type || !req.params.device || !req.params.reqId){
+		res.send("no good");
+		//TODO: right error code!
+		return;
+	}
 	var isBuyer = req.params.type != "merchant";
 	req.instagram.use({
 	  client_id: isBuyer ? Config.get("SHOPPER_INSTA_CLIENT_ID") : Config.get("MERCHANT_INSTA_CLIENT_ID"),
