@@ -35,8 +35,11 @@ new CronJob('*/'+Config.get("WORKER_RUN_INTERVAL_SECONDS")+' * * * * *', functio
      			 		if(!err){
 	     					if(medias.length){
 	     						//saving last id that was querried
+	     						var currenLastLikedId = user.lastLikedInstaId; 
+	     						user.lastLikedInstaId = medias[0].id;
+	     						user.save();									  			    			
 	     						medias.forEach(function(media, index){
-	     							if(media.id == user.lastLikedInstaId){
+	     							if(media.id == currenLastLikedId){
 	     								return;
 	     							}
 		     						db.Media.findOne({instaId: media.id, isMatchedWithProduct : true } , function (err, mediaFromDB) {
@@ -61,13 +64,10 @@ new CronJob('*/'+Config.get("WORKER_RUN_INTERVAL_SECONDS")+' * * * * *', functio
 												function (error, response, body) {
 												  if (!error && response.statusCode == 200 && body.success > 0 /*at least one device got it*/) {
 	    			     							//Saving likes to db
+	    			     							console.log(body);
 						     						db.Like.findOrCreate({likedBy: user, media: mediaFromDB}, {likedDate: Date.now()}, function(err, toBeSavedLike) {
 									  			    	if(!err){
 									  			    		toBeSavedLike.save();
-									  			    		if(index == medias.length - 1){
-									     						user.lastLikedInstaId = medias[0].id;
-									     						user.save();									  			    			
-									  			    		}
 									  			    	} else {
 									  			    		console.log(err);
 									  			    		return;
