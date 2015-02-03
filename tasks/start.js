@@ -66,6 +66,7 @@ new CronJob('*/'+Config.get("WORKER_RUN_INTERVAL_SECONDS")+' * * * * *', functio
 												  if (!error && response.statusCode == 200 && body.success > 0 /*at least one device got it*/) {
 	    			     							//Saving likes to db
 	    			     							console.log(body);
+											console.log("Remaining api calls per hour for this user: " + remaining);
 						     						db.Like.findOrCreate({likedBy: user, media: mediaFromDB}, {likedDate: Date.now()}, function(err, toBeSavedLike) {
 									  			    	if(!err){
 									  			    		toBeSavedLike.save();
