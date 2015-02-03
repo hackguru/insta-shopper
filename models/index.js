@@ -13,6 +13,26 @@ var autoUpdateTimeStamp = function (next) {
   next();
 };
 
+var Like = new Schema ({
+    likedBy: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+      required : true,
+    },
+    likedDate: {
+      type: Date,
+      default: Date.now,
+      required: true,     
+    },
+    media: {
+      type: Schema.Types.ObjectId,
+      ref: 'Media',      
+      required : true,
+    }
+})
+
+Like.plugin(findOrCreate);
+
 var Media = new Schema ({
   caption: {
     required: false,
@@ -24,10 +44,7 @@ var Media = new Schema ({
     required: true,
     trim: true
   },
-  likes: [{
-    type: Schema.Types.ObjectId,
-    ref: 'User'
-  }],
+  likes: [Schema.Types.Mixed],
   owner: {
       type: Schema.Types.ObjectId,
       ref: 'User',
@@ -85,7 +102,9 @@ var Media = new Schema ({
     default: mediaTypes[0]
   },
   isMatchedWithProduct : Boolean,
-  linkToProduct: String
+  linkToProduct: String,
+  productLinkScreenshot: String,
+  productDescription: String
 });
 
 Media.pre('save', autoUpdateTimeStamp);
@@ -158,36 +177,6 @@ User.pre('save', autoUpdateTimeStamp);
 
 User.plugin(findOrCreate);
 
-User.statics.findProfileById = function(id, fields, callback) {
-  var User = this;
-  var Media = User.model('Media');
-
-  return User.findById(id, fields, function(err, obj) {
-    if (err) return callback(err);
-    if (!obj) return callback(new Error('User is not found'));
-
-    Media.find({
-      owner: obj._id
-    }, null, {
-      sort: {
-        'created': -1
-      }
-    }, function(err, list) {
-      if (err) return callback(err);
-      obj.posts.own = list || [];
-      Media.find({
-        likes: obj._id
-      }, null, {
-        sort: {
-          'created': -1
-        }
-      }, function(err, list) {
-        if (err) return callback(err);
-        obj.posts.likes = list || [];
-      });
-    });
-  });
-}
-
 exports.Media = Media;
 exports.User = User;
+exports.Like = Like;

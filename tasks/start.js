@@ -16,11 +16,12 @@ connection.once('open', function () {
 });
 var db = {
     User: connection.model('User', models.User, 'users'),
-    Media: connection.model('Media', models.Media, 'medias')
+    Media: connection.model('Media', models.Media, 'medias'),
+    Like: connection.model('Like', models.Like, 'likes')
 }
 
 new CronJob('*/'+Config.get("WORKER_RUN_INTERVAL_SECONDS")+' * * * * *', function(){
-    console.log('starting new task - (scheduled every second)');
+    console.log('starting new run of task');
     db.User
     	.find({ $or: [ { type: "buyer" }, { type: "both" } ] })
 		.sort({'lastQueried': 'asc'})
@@ -49,15 +50,25 @@ new CronJob('*/'+Config.get("WORKER_RUN_INTERVAL_SECONDS")+' * * * * *', functio
 													  "registration_ids" : user.buyerRegisterationIds.androidIds,
 													  "data" : {
 													   	imageUrl: mediaFromDB.images.low_resolution.url,
-													   	text: "The item you likde is available for sale!",
+													   	text: mediaFromDB.productDescription,
 													   	productLink: mediaFromDB.linkToProduct,
-													   	linkSrceenShot: mediaFromDB.linkToProduct
+													   	linkSrceenShot: mediaFromDB.productLinkScreenshot
 													  }
 													}
 												},
 												function (error, response, body) {
-												  if (!error && response.statusCode == 200) {
-												    console.log(body);
+												  if (!error && response.statusCode == 200 && body.success > 0 /*at least one device got it*/) {
+	    			     							//Saving likes to db
+						     						db.Like.findOrCreate({likedBy: user, media: mediaFromDB}, {likedDate: Date.now()}, function(err, toBeSavedLike) {
+									  			    	if(!err){
+									  			    		toBeSavedLike.save();
+								     						user.save();
+									  			    	} else {
+									  			    		console.log(err);
+									  			    		return;
+									  			    	}
+									  			    });
+
 												  } else {
 													console.log("BODY:\n" + body);
 													console.log("ERROR:\n" + error);

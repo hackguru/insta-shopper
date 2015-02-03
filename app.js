@@ -6,10 +6,41 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
 var instagram = require('instagram-node').instagram();
+var Framer = require('framer');
+var AWS_KEY = process.env.AWS_KEY || Config.get("AWS_KEY")
+  , AWS_SECRET = process.env.AWS_SECRET || Config.get("AWS_SECRET")
+  , AWS_S3BUCKET = process.env.AWS_S3BUCKET || Config.get("AWS_S3BUCKET");
+
+
+var framer = new Framer({
+  s3: {
+    secure: false,
+    key: AWS_KEY,
+    secret: AWS_SECRET,
+    bucket: AWS_S3BUCKET
+  }
+});
+
+var serveImage = framer.serveImage({ prefix: '/img', cacheMaxAge: 3600 });
+var handleUpload = framer.handleUpload({
+  // authHandler: function (value, cb) {
+  //   //TODO
+  //   cb(null, value);
+  // },
+  prefix: '/img'
+});
+
+function framerSetup(req, res, next){
+    req.uploader = handleUpload;
+    req.imageServer = serveImage;
+    return next();
+}
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
 var insta = require('./routes/insta');
+var media = require('./routes/media')
+
 var models = require('./models');
 
 // Database
@@ -23,7 +54,8 @@ connection.once('open', function () {
 function db(req, res, next) {
     req.db = {
         User: connection.model('User', models.User, 'users'),
-        Media: connection.model('Media', models.Media, 'medias')
+        Media: connection.model('Media', models.Media, 'medias'),
+        Like: connection.model('Like', models.Like, 'likes')
     };
     return next();
 };
@@ -52,6 +84,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', routes);
 app.use('/users', instaSetup, db, users);
 app.use('/insta', instaSetup, db, insta);
+app.use('/media', db, framerSetup, media);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

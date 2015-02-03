@@ -28,7 +28,6 @@ router.post('/post', function(req, res, next) {
 					var newMedia = {
 					  caption: media.caption ? media.caption.text : null,
 					  instaId: media.id,
-					  likes: [],
 					  owner: user,
 					  videos: media.videos ? media.videos : null,
 					  images: media.images ? media.images : null,
@@ -75,17 +74,6 @@ router.post('/post', function(req, res, next) {
 		});
 	});
 	res.send('respond with a resource');
-});
-
-router.post('/match/:instaId/:productId', function(req, res, next) {
-	req.db.Media.update({ instaId: req.params.instaId }, { isMatchedWithProduct: true }, function (err) {
-	  if (err){
-	  	console.log(err);
-	  	res.send('Not good!');
-	  } else {
-	  	res.send("ok");
-	  }
-	});
 });
 
 module.exports = router;

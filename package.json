@@ -20,6 +20,7 @@
     "nconf": "*",
     "mongoose": "*",
     "mongoose-findorcreate": "*",
-    "instagram-node": "*"
+    "instagram-node": "*",
+    "framer": "*"
   }
 }
