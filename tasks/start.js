@@ -93,5 +93,5 @@ setInterval(function(){
      			);
      		});
 		});
-}, Config.get("WORKER_RUN_INTERVAL_SECONDS"));
+}, Config.get("WORKER_RUN_INTERVAL_SECONDS")*1000);
 
