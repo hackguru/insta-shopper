@@ -30,16 +30,17 @@ new CronJob('*/'+Config.get("WORKER_RUN_INTERVAL_SECONDS")+' * * * * *', functio
      		users.forEach(function(user){
      			instagram.use({ access_token: user.token });
      			instagram.user_self_liked(
-     				{ count:Config.get("WORKER_RUN_INTERVAL_SECONDS")/*assume users do one like persecond*/, min_id:user.lastLikedInstaId },
+     				{ count:Config.get("WORKER_RUN_INTERVAL_SECONDS")/*assume users do one like persecond*/ },
      			 	function(err, medias, pagination, remaining, limit) {
      			 		if(!err){
 	     					if(medias.length){
 	     						//saving last id that was querried
-	     						var currenLastLikedId = user.lastLikedInstaId; 
-	     						user.lastLikedInstaId = medias[0].id;
+	     						var currentLastTimestamp = user.lastLikedTimestamp; 
+	     						user.lastLikedTimestamp = medias[0].created_time;
+	     						user.lastQueried = Date.now();
 	     						user.save();									  			    			
-	     						medias.forEach(function(media, index){
-	     							if(media.id == currenLastLikedId){
+	     						medias.forEach(function(media){
+	     							if(media.created_time <= currentLastTimestamp){
 	     								return;
 	     							}
 		     						db.Media.findOne({instaId: media.id, isMatchedWithProduct : true } , function (err, mediaFromDB) {
