@@ -3,7 +3,6 @@ Config = require('nconf');
 Config.argv()
      .env()
      .file({ file: 'config.json' });
-var CronJob = require('cron').CronJob;
 var instagram = require('instagram-node').instagram();
 var mongoose = require('mongoose');
 var request = require('request');
@@ -20,7 +19,7 @@ var db = {
     Like: connection.model('Like', models.Like, 'likes')
 }
 
-new CronJob('*/'+Config.get("WORKER_RUN_INTERVAL_SECONDS")+' * * * * *', function(){
+setInterval(function(){
     console.log('starting new run of task');
     db.User
     	.find({ $or: [ { type: "buyer" }, { type: "both" } ] })
@@ -94,5 +93,5 @@ new CronJob('*/'+Config.get("WORKER_RUN_INTERVAL_SECONDS")+' * * * * *', functio
      			);
      		});
 		});
-}, null, true, "America/Los_Angeles");
+}, Config.get("WORKER_RUN_INTERVAL_SECONDS"));
 
