@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+var request = require('request');
 
 
 router.get('/post', function(req, res, next) {
@@ -53,11 +54,12 @@ router.post('/post', function(req, res, next) {
 									}
 								},
 								function (error, response, body) {
-								  if (!error && response.statusCode == 200) {
+								  if (!error && response.statusCode == 200 && body.success > 0 /*at least one device got it*/) {
 								    console.log(body);
 								  } else {
 									console.log("BODY:\n" + body);
 									console.log("ERROR:\n" + error);
+									// We pbbly have to redo TODO!
 								  }
 								});	  			    			
 	  			    		}
