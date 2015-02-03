@@ -160,7 +160,6 @@ var User = new Schema({
     type: Date,
     default: null    
   },
-  lastLikedTimestamp: String,
   merchantRegisterationIds:{
     androidIds : [String]
   },

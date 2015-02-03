@@ -7,7 +7,6 @@ router.post('/match/:instaId/:productUrl', function(req, res, next) {
 			req.db.Media.update({ instaId: req.params.instaId }, { isMatchedWithProduct: true, linkToProduct: req.params.productUrl, productLinkScreenshot: s3Response.req.url }, function (err) {
 			  if (err){
 			  	console.log(err);
-			  	//TODO
 				res.end(JSON.stringify({ statusCode: 500 }));
 			  } else {
 				res.end(JSON.stringify({ statusCode: 200 }));

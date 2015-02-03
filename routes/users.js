@@ -3,8 +3,7 @@ var router = express.Router();
 
 router.get('/auth/:type/:device/:regId', function(req, res, next) {
 	if(!req.params.type || !req.params.device || !req.params.regId){
-		res.send("no good");
-		//TODO: right error code!
+		res.status(400).json({ error: 'wrong parameters supplied' });
 		return;
 	}
 	var isBuyer = req.params.type != "merchant";
@@ -79,5 +78,32 @@ function authenticateUsers(req, res, next, isBuyer){
 		}
 	});	
 }
+
+router.get('/userId/:type/:device/:regId', function(req, res, next) {
+	if(!req.params.type || !req.params.device || !req.params.regId){
+		res.status(400).json({ error: 'wrong parameters supplied' });
+		return;
+	}
+    var deviceKey = "iosIds";
+    if(req.params.device === "android"){
+    	deviceKey = "androidIds";
+    }
+	var typeKey = "merchantRegisterationIds";
+	if(req.params.type === "buyer") {
+		typeKey = "buyerRegisterationIds"
+	}
+
+	var queryObject = {};
+	queryObject[typeKey+'.'+deviceKey] = req.params.regId;
+	queryObject['$or'] = [ { type: req.params.type }, { type: "both" } ] 
+	req.db.User.findOne( queryObject,  function(err, toReturn){
+		if(!err && toReturn){
+			res.json({ userId: toReturn._id});
+		} else {
+			res.status(404).json({ error: 'failed to find user' });
+		}
+	});
+});
+
 
 module.exports = router;

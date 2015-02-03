@@ -59,23 +59,26 @@ router.post('/post', function(req, res, next) {
 								  } else {
 									console.log("BODY:\n" + body);
 									console.log("ERROR:\n" + error);
+									res.status(400).json({ error: 'could not complete operation' });
 									// We pbbly have to redo TODO!
 								  }
 								});	  			    			
 	  			    		}
 	  			    	}else{
 							console.log(err);
+							res.status(400).json({ error: 'could not complete operation' });
 							//TODO : handle error
 	  			    	}
 					});
 				});
 			}else{
 				console.log(err);
+				res.status(400).json({ error: 'could not complete operation' });
 				//TODO : handle error
 			}	
 		});
 	});
-	res.send('respond with a resource');
+	res.send('ok');
 });
 
 module.exports = router;
