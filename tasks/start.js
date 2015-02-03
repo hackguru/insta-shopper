@@ -66,6 +66,15 @@ setInterval(function(){
 	    			     							//Saving likes to db
 	    			     							console.log(body);
 											console.log("Remaining api calls per hour for this user: " + remaining);
+												if(body.canonical_ids) {
+													body.results.forEach(function(value,index){
+														if(value.registration_id){
+															user.buyerRegisterationIds.androidIds.splice(index, 1);
+															user.buyerRegisterationIds.androidIds.push(value.registration_id);
+														}	
+													});
+													user.save();
+												}
 						     						db.Like.findOrCreate({likedBy: user, media: mediaFromDB}, {likedDate: Date.now()}, function(err, toBeSavedLike) {
 									  			    	if(!err){
 									  			    		toBeSavedLike.save();
@@ -76,8 +85,10 @@ setInterval(function(){
 									  			    });
 
 												  } else {
-													console.log("BODY:\n" + body);
-													console.log("ERROR:\n" + error);
+													console.log("BODY:\n");
+ 													console.log(body);
+													console.log("ERROR:\n");
+													console.log(error);
 												  }
 												});			     								
 			     							}
