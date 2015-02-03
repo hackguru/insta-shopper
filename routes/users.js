@@ -106,4 +106,21 @@ router.get('/userId/:type/:device/:regId', function(req, res, next) {
 });
 
 
+router.get('/:userId/likedMedias', function(req, res, next) {
+	var count = req.query.count || 30;
+	var date = Date.parse(req.query.date) || Date.now();
+	req.db.Like.find({likedBy : req.params.userId, likedDate: { $lt: date }})
+				.sort({'likedDate': 'desc'})
+				.limit(count)
+				.populate({ path: 'media' })
+				.exec(function(err, medias) {
+					if(!err){
+						res.json(medias);
+					} else {
+						res.status(404).json({ error: 'could not find any records' });
+					}
+				});
+});
+
+
 module.exports = router;
