@@ -44,7 +44,6 @@ var Media = new Schema ({
     required: true,
     trim: true
   },
-  likes: [Schema.Types.Mixed],
   owner: {
       type: Schema.Types.ObjectId,
       ref: 'User',
@@ -165,10 +164,6 @@ var User = new Schema({
   },
   buyerRegisterationIds:{
     androidIds : [String]
-  },
-  posts: {
-    own: [Schema.Types.Mixed],
-    likes: [Schema.Types.Mixed]
   }
 });
 

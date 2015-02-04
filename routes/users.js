@@ -115,12 +115,31 @@ router.get('/:userId/likedMedias', function(req, res, next) {
 				.populate({ path: 'media' })
 				.exec(function(err, medias) {
 					if(!err){
-						res.json(medias);
+						res.json({
+							results: medias
+						});
 					} else {
 						res.status(404).json({ error: 'could not find any records' });
 					}
 				});
 });
 
+
+router.get('/:userId/postedMedias', function(req, res, next) {
+	var count = req.query.count || 30;
+	var date = Date.parse(req.query.date) || Date.now();
+	req.db.Media.find({owner : req.params.userId, created: { $lt: date }})
+				.sort({'created': 'desc'})
+				.limit(count)
+				.exec(function(err, medias) {
+					if(!err){
+						res.json({
+							results: medias
+						});
+					} else {
+						res.status(404).json({ error: 'could not find any records' });
+					}
+				});
+});
 
 module.exports = router;
