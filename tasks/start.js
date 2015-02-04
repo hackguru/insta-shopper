@@ -33,10 +33,8 @@ setInterval(function(){
  						var allMediaInstaIds = medias.map(function(value){ return value.id; });
 						db.Media.find({instaId: { $in: allMediaInstaIds }, isMatchedWithProduct : true } , function (err, mediasFromDB) {
 							//gettting what we should exclude
-							debugger;
 							if(!err){
 								db.Like.find( {media: { $in: mediasFromDB} }, function(err, likesToExclude){
-									debugger;
 									if(!err){
 										var mediaIdsToExclude = likesToExclude.map(function(value){ return value.media.toString()})
 				 						mediasFromDB.forEach(function(media){

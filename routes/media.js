@@ -22,7 +22,15 @@ router.post('/matchScreenShot/:mediaId', function(req, res, next) {
 });
 
 router.post('/match/:mediaId', function(req, res, next) {
-	req.db.Media.update({ instaId: req.params.mediaId }, { isMatchedWithProduct: true, linkToProduct: req.body.productUrl, productDescription: req.body.productDescription }, function (err) {
+	var updateObj = {};
+	if (req.body.productUrl) {
+		updateObj["linkToProduct"] = req.body.productUrl;
+		updateObj["isMatchedWithProduct"] = req.body.true;		
+	}
+	if (req.body.productDescription) {
+		updateObj["productDescription"] = req.body.productUrl;
+	}
+	req.db.Media.update({ _id: req.params.mediaId }, { isMatchedWithProduct: true, linkToProduct: req.body.productUrl, productDescription: req.body.productDescription }, function (err) {
 	  if (err){
 	  	console.log(err);
 	  	//TODO
