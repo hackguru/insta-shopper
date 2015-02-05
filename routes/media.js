@@ -1,16 +1,39 @@
 var express = require('express');
 var router = express.Router();
+var url = require('url');
 
 router.post('/matchScreenShot/:mediaId', function(req, res, next) {
-	req.uploader(req, res, function(err, s3Response){
-		if(!err){
-			req.db.Media.update({ _id: req.params.mediaId }, { productLinkScreenshot: s3Response.req.url }, function (err) {
-			  if (err){
+	req.db.Media.findOne({ _id: req.params.mediaId }, function (err, media) {
+	  if (err){
+		req.uploader(req, res, function(err, s3Response){
+			if(!err){
 			  	console.log(err);
 			  	//TODO
 				res.end(JSON.stringify({ statusCode: 500 }));
 			  } else {
+			  	var previousUrl = media.productLinkScreenshot;
+			  	media.productLinkScreenshot = s3Response.req.url;
+			  	media.save();
 				res.end(JSON.stringify({ statusCode: 200 }));
+
+				//Deleting old image
+				var uri = url.parse(previousUrl);
+
+				var params = {
+				  Bucket: uri.hostname.split(".")[0],
+				  Delete: {
+				    Objects: [
+				      {
+				        Key: uri.path.substr(1)
+				      }
+				    ]
+				  }
+				};
+
+				req.s3.deleteObjects(params, function(err, data) {
+				  if (err) console.log(err, err.stack); // an error occurred
+				});
+
 			  }
 			});			
 		}else {

@@ -7,10 +7,12 @@ var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
 var instagram = require('instagram-node').instagram();
 var Framer = require('framer');
+var AWS = require('aws-sdk');
 var AWS_KEY = process.env.AWS_KEY || Config.get("AWS_KEY")
   , AWS_SECRET = process.env.AWS_SECRET || Config.get("AWS_SECRET")
   , AWS_S3BUCKET = process.env.AWS_S3BUCKET || Config.get("AWS_S3BUCKET");
-
+process.env.AWS_ACCESS_KEY_ID = AWS_KEY;
+process.env.AWS_SECRET_ACCESS_KEY = AWS_SECRET;
 
 var framer = new Framer({
   s3: {
@@ -33,6 +35,16 @@ var handleUpload = framer.handleUpload({
 function framerSetup(req, res, next){
     req.uploader = handleUpload;
     req.imageServer = serveImage;
+    return next();
+}
+
+//aws Setup
+AWS.config.region = 'us-west-2';
+
+var s3 = new AWS.S3();
+
+function setupS3(req, res, next){
+    req.s3 = s3;
     return next();
 }
 
@@ -84,7 +96,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', routes);
 app.use('/users', instaSetup, db, users);
 app.use('/insta', instaSetup, db, insta);
-app.use('/media', db, framerSetup, media);
+app.use('/media', db, framerSetup, setupS3, media);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
