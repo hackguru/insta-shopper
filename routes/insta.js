@@ -56,6 +56,16 @@ router.post('/post', function(req, res, next) {
 								function (error, response, body) {
 								  if (!error && response.statusCode == 200 && body.success > 0 /*at least one device got it*/) {
 								    console.log(body);
+								    //TODO: refactor this between two apis
+	     							if(body.canonical_ids) {
+	     								body.results.forEach(function(value,index){
+	     									if(value.registration_id){
+	     										user.merchantRegisterationIds.androidIds.splice(index, 1);
+	     										user.merchantRegisterationIds.androidIds.push(value.registration_id);
+	     									}	
+	     								});
+	     								user.save();
+	     							}
 								  } else {
 									console.log("BODY:\n" + body);
 									console.log("ERROR:\n" + error);

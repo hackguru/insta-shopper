@@ -61,6 +61,20 @@ function authenticateUsers(req, res, next, isBuyer){
 		    if(states[0] === "android"){
 		    	deviceKey = "androidIds";
 		    }
+
+		    //Removing regId from other users that have the same id
+	    	var queryObject = {};
+			queryObject[regKey+'.'+deviceKey] = states[1];
+			req.db.User.findOne( queryObject,  function(err, userWithCurrentRegId){
+				if(!err && userWithCurrentRegId){
+					var index = userWithCurrentRegId[regKey][deviceKey].indexOf(states[1]);
+					userWithCurrentRegId[regKey][deviceKey].splice(index, 1);
+					userWithCurrentRegId.save();
+				} else {
+					console.log(err);
+				}
+			});
+
 	    	if(newUser[regKey]) {
 	    		if(newUser[regKey][deviceKey]){
 	    			if(newUser[regKey][deviceKey].indexOf(states[1])<0) {

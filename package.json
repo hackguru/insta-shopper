@@ -20,6 +20,7 @@
     "mongoose": "*",
     "mongoose-findorcreate": "*",
     "instagram-node": "*",
-    "framer": "*"
+    "framer": "*",
+    "aws-sdk": "*"
   }
 }
