@@ -16,23 +16,25 @@ router.post('/matchScreenShot/:mediaId', function(req, res, next) {
 			  	media.save();
 				res.end(JSON.stringify({ statusCode: 200 }));
 
-				//Deleting old image
-				var uri = url.parse(previousUrl);
+				if(previousUrl)	{
+					//Deleting old image
+					var uri = url.parse(previousUrl);
 
-				var params = {
-				  Bucket: uri.hostname.split(".")[0],
-				  Delete: {
-				    Objects: [
-				      {
-				        Key: uri.path.substr(1)
-				      }
-				    ]
-				  }
-				};
+					var params = {
+					  Bucket: uri.hostname.split(".")[0],
+					  Delete: {
+					    Objects: [
+					      {
+					        Key: uri.path.substr(1)
+					      }
+					    ]
+					  }
+					};
 
-				req.s3.deleteObjects(params, function(err, data) {
-				  if (err) console.log(err, err.stack); // an error occurred
-				});
+					req.s3.deleteObjects(params, function(err, data) {
+					  if (err) console.log(err, err.stack); // an error occurred
+					});					
+				}
 
 			  }
 			});			
