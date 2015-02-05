@@ -31,6 +31,7 @@ setInterval(function(){
 					user.save();
 					if(medias.length){
  						var allMediaInstaIds = medias.map(function(value){ return value.id; });
+ 						debugger;
 						db.Media.find({instaId: { $in: allMediaInstaIds }, isMatchedWithProduct : true } , function (err, mediasFromDB) {
 							//gettting what we should exclude
 							debugger;
