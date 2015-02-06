@@ -84,9 +84,9 @@ setInterval(function(){
 			    			     								}
 			    			     							});
 			    			     						} else {
-			    			     							console.log("BODY:\n");
+			    			     							console.log("BODY:");
 			    			     							console.log(body);
-			    			     							console.log("ERROR:\n");
+			    			     							console.log("ERROR:");
 			    			     							console.log(error);
 			    			     						}
 			    			     					});			     								

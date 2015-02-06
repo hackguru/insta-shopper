@@ -67,9 +67,9 @@ router.post('/post', function(req, res, next) {
 	     								user.save();
 	     							}
 								  } else {
-	     							console.log("BODY:\n");
+	     							console.log("BODY:");
 	     							console.log(body);
-	     							console.log("ERROR:\n");
+	     							console.log("ERROR:");
 	     							console.log(error);
 									// We pbbly have to redo TODO!
 								  }
