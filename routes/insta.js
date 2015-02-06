@@ -91,7 +91,7 @@ router.post('/post', function(req, res, next) {
 									note.payload = {'imageUrl': 'toBeSavedMedia.images.low_resolution.url'};
 
 									req.apnConnection.pushNotification(note, myDevice);									
-								}
+								});
 							}
 	  			    	}else{
 							console.log(err);
