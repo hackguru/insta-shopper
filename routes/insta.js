@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var request = require('request');
+var apn = require('apn');
 
 
 router.get('/post', function(req, res, next) {
@@ -39,7 +40,7 @@ router.post('/post', function(req, res, next) {
 	  			    	if(!err){
 	  			    		toBeSavedMedia.save();
 	  			    		// push notification to seller
-	  			    		debugger;
+	  			    		//android devices
 	  			    		if(user.merchantRegisterationIds.androidIds && user.merchantRegisterationIds.androidIds.length){
 								request(
 								{
@@ -50,7 +51,7 @@ router.post('/post', function(req, res, next) {
 									  "registration_ids" : user.merchantRegisterationIds.androidIds,
 									  "data" : {
 									   	imageUrl: toBeSavedMedia.images.low_resolution.url,
-									   	text: "Do you wanna add a link for this product?",
+									   	text: "Do you wanna link the picture you just instagramed?",
 									  }
 									}
 								},
@@ -76,6 +77,22 @@ router.post('/post', function(req, res, next) {
 								  }
 								});	  			    			
 	  			    		}
+  			    			//ios devices
+	  			    		if(user.merchantRegisterationIds.iosIds && user.merchantRegisterationIds.iosIds.length){
+								user.merchantRegisterationIds.iosIds.forEach(function(regId)){
+									var myDevice = new apn.Device(regId);
+
+									var note = new apn.Notification();
+
+									note.expiry = Math.floor(Date.now() / 1000) + 60; // Expires 1 min from now.
+									note.badge = 1;
+									note.sound = "ping.aiff";
+									note.alert = "Do you wanna link the picture you just instagramed?";
+									note.payload = {'imageUrl': 'toBeSavedMedia.images.low_resolution.url'};
+
+									req.apnConnection.pushNotification(note, myDevice);									
+								}
+							}
 	  			    	}else{
 							console.log(err);
 							//TODO : handle error
