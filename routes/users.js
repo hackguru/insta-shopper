@@ -192,5 +192,15 @@ router.get('/:userId/postedMedias', function(req, res, next) {
 });
 
 
+router.get('/:userId', function(req, res, next) {
+	req.db.User.findOne({_id : req.params.userId}, function(err, user) {
+		if(!err){
+			res.json(user);
+		} else {
+			res.status(404).json({ error: 'could not find any records' });
+		}
+	});
+});
+
 
 module.exports = router;
