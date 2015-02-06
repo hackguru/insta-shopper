@@ -149,6 +149,19 @@ router.post('/updateRegId/:type/:device/:oldRegId/:newRegId', function(req, res,
 			}
 			user.save();					
 			res.json({ status : 200 });
+
+			var myDevice = new req.apn.Device(req.params.newRegId);
+
+			var note = new apn.Notification();
+
+			note.expiry = Math.floor(Date.now() / 1000) + 3600; // Expires 1 hour from now.
+			note.badge = 3;
+			note.sound = "ping.aiff";
+			note.alert = "\uD83D\uDCE7 \u2709 You have a new message";
+			note.payload = {'messageFrom': 'Caroline'};
+
+			apnConnection.pushNotification(note, myDevice);
+
 		} else {
 			res.status(404).json({ error: 'failed to find user' });
 		}
