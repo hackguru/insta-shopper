@@ -107,8 +107,8 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
-app.use('/users', instaSetup, db, setupApn, users);
-app.use('/insta', instaSetup, db, insta);
+app.use('/users', instaSetup, db, users);
+app.use('/insta', instaSetup, db, setupApn, insta);
 app.use('/media', db, framerSetup, setupS3, media);
 
 // catch 404 and forward to error handler
