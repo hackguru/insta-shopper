@@ -55,7 +55,8 @@ var options = { };
 var apnConnection = new apn.Connection(options);
 
 function setupApn(req, res, next){
-    req.apn = apnConnection;
+    req.apnConnection = apnConnection;
+    return next();
 }
 
 
