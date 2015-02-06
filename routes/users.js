@@ -65,13 +65,15 @@ function authenticateUsers(req, res, next, isBuyer){
 		    //Removing regId from other users that have the same id
 	    	var queryObject = {};
 			queryObject[regKey+'.'+deviceKey] = states[1];
-			req.db.User.findOne( queryObject,  function(err, userWithCurrentRegId){
-				if(!err && userWithCurrentRegId){
-					if(userWithCurrentRegId._id.toString() != newUser._id.toString()){
-						var index = userWithCurrentRegId[regKey][deviceKey].indexOf(states[1]);
-						userWithCurrentRegId[regKey][deviceKey].splice(index, 1);
-						userWithCurrentRegId.save();						
-					}
+			req.db.User.find( queryObject,  function(err, usersWithCurrentRegId){
+				if(!err && usersWithCurrentRegId){
+					usersWithCurrentRegId.forEach(function(userWithCurrentRegId){
+						if(userWithCurrentRegId._id.toString() != newUser._id.toString()){
+							var index = userWithCurrentRegId[regKey][deviceKey].indexOf(states[1]);
+							userWithCurrentRegId[regKey][deviceKey].splice(index, 1);
+							userWithCurrentRegId.save();						
+						}
+					});
 				} else {
 					console.log(err);
 				}
@@ -121,6 +123,37 @@ router.get('/userId/:type/:device/:regId', function(req, res, next) {
 	});
 });
 
+router.post('/updateRegId/:type/:device/:oldRegId/:newRegId', function(req, res, next) {
+	if(!req.params.type || !req.params.device || !req.params.oldRegId){
+		res.status(400).json({ error: 'wrong parameters supplied' });
+		return;
+	}
+    var deviceKey = "iosIds";
+    if(req.params.device === "android"){
+    	deviceKey = "androidIds";
+    }
+	var typeKey = "merchantRegisterationIds";
+	if(req.params.type === "buyer") {
+		typeKey = "buyerRegisterationIds"
+	}
+
+	var queryObject = {};
+	queryObject[typeKey+'.'+deviceKey] = req.params.oldRegId;
+	queryObject['$or'] = [ { type: req.params.type }, { type: "both" } ] 
+	req.db.User.findOne( queryObject,  function(err, user){
+		if(!err && user){
+			var index = user[regKey][deviceKey].indexOf(req.params.oldRegId);
+			user[regKey][deviceKey].splice(index, 1);
+			if(req.params.newRegId) {
+				user[regKey][deviceKey].push(req.params.newRegId);
+			}
+			user.save();					
+			res.json({ status : 200 });
+		} else {
+			res.status(404).json({ error: 'failed to find user' });
+		}
+	});
+});
 
 router.get('/:userId/likedMedias', function(req, res, next) {
 	var count = req.query.count || 30;
@@ -157,5 +190,7 @@ router.get('/:userId/postedMedias', function(req, res, next) {
 					}
 				});
 });
+
+
 
 module.exports = router;

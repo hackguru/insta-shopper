@@ -160,10 +160,12 @@ var User = new Schema({
     default: null    
   },
   merchantRegisterationIds:{
-    androidIds : [String]
+    androidIds : [String],
+    iosIds: [String]
   },
   buyerRegisterationIds:{
-    androidIds : [String]
+    androidIds : [String],
+    iosIds: [String]
   }
 });
 
