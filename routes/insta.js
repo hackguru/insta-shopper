@@ -39,6 +39,7 @@ router.post('/post', function(req, res, next) {
 	  			    	if(!err){
 	  			    		toBeSavedMedia.save();
 	  			    		// push notification to seller
+	  			    		debugger;
 	  			    		if(user.merchantRegisterationIds.androidIds && user.merchantRegisterationIds.androidIds.length){
 								request(
 								{
