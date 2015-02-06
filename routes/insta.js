@@ -79,7 +79,7 @@ router.post('/post', function(req, res, next) {
 	  			    		}
   			    			//ios devices
 	  			    		if(user.merchantRegisterationIds.iosIds && user.merchantRegisterationIds.iosIds.length){
-								user.merchantRegisterationIds.iosIds.forEach(function(regId)){
+								user.merchantRegisterationIds.iosIds.forEach(function(regId){
 									var myDevice = new apn.Device(regId);
 
 									var note = new apn.Notification();
