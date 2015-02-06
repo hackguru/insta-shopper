@@ -67,7 +67,7 @@ function authenticateUsers(req, res, next, isBuyer){
 			queryObject[regKey+'.'+deviceKey] = states[1];
 			req.db.User.findOne( queryObject,  function(err, userWithCurrentRegId){
 				if(!err && userWithCurrentRegId){
-					if(userWithCurrentRegId._id != newUser._id){
+					if(userWithCurrentRegId._id.toString() != newUser._id.toString()){
 						var index = userWithCurrentRegId[regKey][deviceKey].indexOf(states[1]);
 						userWithCurrentRegId[regKey][deviceKey].splice(index, 1);
 						userWithCurrentRegId.save();						
