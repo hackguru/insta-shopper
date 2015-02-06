@@ -142,10 +142,10 @@ router.post('/updateRegId/:type/:device/:oldRegId/:newRegId', function(req, res,
 	queryObject['$or'] = [ { type: req.params.type }, { type: "both" } ] 
 	req.db.User.findOne( queryObject,  function(err, user){
 		if(!err && user){
-			var index = user[regKey][deviceKey].indexOf(req.params.oldRegId);
-			user[regKey][deviceKey].splice(index, 1);
+			var index = user[typeKey][deviceKey].indexOf(req.params.oldRegId);
+			user[typeKey][deviceKey].splice(index, 1);
 			if(req.params.newRegId) {
-				user[regKey][deviceKey].push(req.params.newRegId);
+				user[typeKey][deviceKey].push(req.params.newRegId);
 			}
 			user.save();					
 			res.json({ status : 200 });
