@@ -53,6 +53,7 @@ router.post('/match/:mediaId', function(req, res, next) {
 	  	//TODO
 		res.end(JSON.stringify({ statusCode: 500 }));
 	  } else {
+	  	console.log(req.body);
 		if (req.body.linkToProduct) {
 			media["linkToProduct"] = req.body.linkToProduct;
 			media["isMatchedWithProduct"] = (req.body.linkToProduct === "") ? false : true;
