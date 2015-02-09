@@ -47,13 +47,13 @@ router.post('/matchScreenShot/:mediaId', function(req, res, next) {
 });
 
 router.post('/match/:mediaId', function(req, res, next) {
-	req.db.Media.fondOne({ _id: req.params.mediaId }, function (err, media) {
+	req.db.Media.findOne({ _id: req.params.mediaId }, function (err, media) {
 	  if (err){
 	  	console.log(err);
 	  	//TODO
 		res.end(JSON.stringify({ statusCode: 500 }));
 	  } else {
-		if (req.body.productUrl) {
+		if (req.body.linkToProduct) {
 			media["linkToProduct"] = req.body.linkToProduct;
 			media["isMatchedWithProduct"] = (req.body.linkToProduct === "") ? false : true;
 		}
