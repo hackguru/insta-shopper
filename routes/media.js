@@ -47,21 +47,20 @@ router.post('/matchScreenShot/:mediaId', function(req, res, next) {
 });
 
 router.post('/match/:mediaId', function(req, res, next) {
-	req.db.Media.findOne({ _id: req.params.mediaId }, function (err, media) {
+	var updateObj = {};
+	if (req.body.linkToProduct) {
+		updateObj["linkToProduct"] = req.body.linkToProduct;
+		updateObj["isMatchedWithProduct"] = true;		
+	}
+	if (req.body.productDescription) {
+		updateObj["productDescription"] = req.body.productDescription;
+	}
+	req.db.Media.update({ _id: req.params.mediaId }, updateObj, function (err) {
 	  if (err){
 	  	console.log(err);
 	  	//TODO
 		res.end(JSON.stringify({ statusCode: 500 }));
 	  } else {
-	  	console.log(req.body);
-		if (req.body.linkToProduct) {
-			media["linkToProduct"] = req.body.linkToProduct;
-			media["isMatchedWithProduct"] = (req.body.linkToProduct === "") ? false : true;
-		}
-		if (req.body.productDescription) {
-			media["productDescription"] = req.body.productDescription;
-		}
-		media.save();
 		res.end(JSON.stringify({ statusCode: 200 }));
 	  }
 	});			
