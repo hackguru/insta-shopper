@@ -79,7 +79,7 @@ router.post('/post', function(req, res, next) {
 	  			    		}
   			    			//ios devices
 	  			    		if(user.merchantRegisterationIds.iosIds && user.merchantRegisterationIds.iosIds.length){
-	  			    			ar options = { };
+	  			    			var options = { };
 
 								var apnConnection = new apn.Connection(options);
 

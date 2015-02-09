@@ -13,7 +13,6 @@ var AWS_KEY = process.env.AWS_KEY || Config.get("AWS_KEY")
   , AWS_S3BUCKET = process.env.AWS_S3BUCKET || Config.get("AWS_S3BUCKET");
 process.env.AWS_ACCESS_KEY_ID = AWS_KEY;
 process.env.AWS_SECRET_ACCESS_KEY = AWS_SECRET;
-var apn = require('apn');
 
 var framer = new Framer({
   s3: {
