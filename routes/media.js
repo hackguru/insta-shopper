@@ -55,7 +55,7 @@ router.post('/match/:mediaId', function(req, res, next) {
 	  } else {
 		if (req.body.productUrl) {
 			media["linkToProduct"] = req.body.linkToProduct;
-			media["isMatchedWithProduct"] = (req.body.linkToProduct === "") ? false, true;
+			media["isMatchedWithProduct"] = (req.body.linkToProduct === "") ? false : true;
 		}
 		if (req.body.productDescription) {
 			media["productDescription"] = req.body.productDescription;
