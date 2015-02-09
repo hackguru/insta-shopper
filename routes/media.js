@@ -60,6 +60,7 @@ router.post('/match/:mediaId', function(req, res, next) {
 		if (req.body.productDescription) {
 			media["productDescription"] = req.body.productDescription;
 		}
+		media.save();
 		res.end(JSON.stringify({ statusCode: 200 }));
 	  }
 	});			
