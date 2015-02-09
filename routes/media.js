@@ -55,7 +55,7 @@ router.post('/match/:mediaId', function(req, res, next) {
 	if (req.body.productDescription) {
 		updateObj["productDescription"] = req.body.productUrl;
 	}
-	req.db.Media.update({ _id: req.params.mediaId }, { isMatchedWithProduct: true, linkToProduct: req.body.productUrl, productDescription: req.body.productDescription }, function (err) {
+	req.db.Media.update({ _id: req.params.mediaId }, updateObj, function (err) {
 	  if (err){
 	  	console.log(err);
 	  	//TODO
