@@ -79,6 +79,10 @@ router.post('/post', function(req, res, next) {
 	  			    		}
   			    			//ios devices
 	  			    		if(user.merchantRegisterationIds.iosIds && user.merchantRegisterationIds.iosIds.length){
+	  			    			ar options = { };
+
+								var apnConnection = new apn.Connection(options);
+
 								user.merchantRegisterationIds.iosIds.forEach(function(regId){
 									var myDevice = new apn.Device(regId);
 
@@ -88,9 +92,9 @@ router.post('/post', function(req, res, next) {
 									note.badge = 1;
 									note.sound = "ping.aiff";
 									note.alert = "Do you wanna link the picture you just instagramed?";
-									note.payload = {'imageUrl': 'toBeSavedMedia.images.low_resolution.url'};
+									note.payload = {'imageUrl': toBeSavedMedia.images.low_resolution.url};
 
-									req.apnConnection.pushNotification(note, myDevice);									
+									apnConnection.pushNotification(note, myDevice);									
 								});
 							}
 	  			    	}else{
