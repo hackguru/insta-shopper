@@ -69,6 +69,15 @@ router.post('/post', function(req, res, next) {
 	     								user.save();
 	     							}
 								  } else {
+	     							if(body.failure > 0){
+	     								body.results.forEach(function(value,index){
+	     									if(value.error){
+	     										user.merchantRegisterationIds.androidIds.splice(index, 1);
+	     									}	
+	     								});
+	     								user.save();	     								
+	     							}
+
 	     							console.log("BODY:");
 	     							console.log(body);
 	     							console.log("ERROR:");

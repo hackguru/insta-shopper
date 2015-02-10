@@ -84,6 +84,14 @@ setInterval(function(){
 			    			     								}
 			    			     							});
 			    			     						} else {
+							     							if(body.failure > 0){
+							     								body.results.forEach(function(value,index){
+							     									if(value.error){
+							     										user.buyerRegisterationIds.androidIds.splice(index, 1);
+							     									}	
+							     								});
+							     								user.save();	     								
+							     							}
 			    			     							console.log("BODY:");
 			    			     							console.log(body);
 			    			     							console.log("ERROR:");
