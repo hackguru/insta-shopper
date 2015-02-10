@@ -86,7 +86,7 @@ setInterval(function(){
 			    			     						} else {
 							     							if(body.failure > 0){
 							     								body.results.forEach(function(value,index){
-							     									if(value.error){
+							     									if(value.error == 'NotRegistered'){
 							     										user.buyerRegisterationIds.androidIds.splice(index, 1);
 							     									}	
 							     								});
