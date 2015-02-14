@@ -191,6 +191,24 @@ router.get('/:userId/postedMedias', function(req, res, next) {
 				});
 });
 
+router.get('/:userId/newlyPostedMedias', function(req, res, next) {
+	var date = Date.parse(req.query.date);
+	if(!date){
+		res.status(404).json({ error: 'no min date passed' });
+	}
+	req.db.Media.find({owner : req.params.userId, created: { $gt: date }})
+				.sort({'created': 'desc'})
+				.exec(function(err, medias) {
+					if(!err){
+						res.json({
+							results: medias
+						});
+					} else {
+						res.status(404).json({ error: 'could not find any records' });
+					}
+				});
+});
+
 
 router.get('/:userId', function(req, res, next) {
 	req.db.User.findOne({_id : req.params.userId}, function(err, user) {

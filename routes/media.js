@@ -35,7 +35,6 @@ router.post('/matchScreenShot/:mediaId', function(req, res, next) {
 					  if (err) console.log(err, err.stack); // an error occurred
 					});					
 				}
-
 			  }
 			});			
 		}else {
