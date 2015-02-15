@@ -222,12 +222,12 @@ router.post('/updateRegId', function(req, res, next) {
     if(req.userType === "buyer") {
       typeKey = "buyerRegisterationIds"
     }    
-	var index = user[typeKey][deviceKey].indexOf(req.reqId);
-	user[typeKey][deviceKey].splice(index, 1);
+	var index = req.user[typeKey][deviceKey].indexOf(req.reqId);
+	req.user[typeKey][deviceKey].splice(index, 1);
 	if(newRegId) {
-		user[typeKey][deviceKey].push(newRegId);
+		req.user[typeKey][deviceKey].push(newRegId);
 	}
-	user.save();					
+	req.user.save();					
 	res.json({ status : 200 });
 });
 
