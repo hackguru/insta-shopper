@@ -105,29 +105,6 @@ router.get('/userId', function(req, res, next) {
 	res.json({ userId: req.user._id});
 });
 
-router.post('/updateRegId', function(req, res, next) {
-	var newRegId = req.body.newRegId;
-	if(!req.user){
-		res.status(401).json({ error: 'unauthorized user' });
-		return;
-	}
-    var deviceKey = "iosIds";
-    if(req.device === "android"){
-      deviceKey = "androidIds";
-    }
-    var typeKey = "merchantRegisterationIds";
-    if(req.userType === "buyer") {
-      typeKey = "buyerRegisterationIds"
-    }    
-	var index = user[typeKey][deviceKey].indexOf(oldRegId);
-	user[typeKey][deviceKey].splice(index, 1);
-	if(req.params.newRegId) {
-		user[typeKey][deviceKey].push(req.params.newRegId);
-	}
-	user.save();					
-	res.json({ status : 200 });
-});
-
 router.get('/:userId/likedMedias', function(req, res, next) {
 	if(!req.user || req.user._id != req.params.userId){
 		res.status(401).json({ error: 'unauthorized user' });
@@ -230,6 +207,29 @@ router.get('/merchant/:userId', function(req, res, next) {
 		}
 	});
 })
+
+router.post('/updateRegId', function(req, res, next) {
+	var newRegId = req.body.newRegId;
+	if(!req.user){
+		res.status(401).json({ error: 'unauthorized user' });
+		return;
+	}
+    var deviceKey = "iosIds";
+    if(req.device === "android"){
+      deviceKey = "androidIds";
+    }
+    var typeKey = "merchantRegisterationIds";
+    if(req.userType === "buyer") {
+      typeKey = "buyerRegisterationIds"
+    }    
+	var index = user[typeKey][deviceKey].indexOf(oldRegId);
+	user[typeKey][deviceKey].splice(index, 1);
+	if(req.params.newRegId) {
+		user[typeKey][deviceKey].push(req.params.newRegId);
+	}
+	user.save();					
+	res.json({ status : 200 });
+});
 
 router.get('/:userId/logout', function(req, res, next) {
 	if(!req.user){
