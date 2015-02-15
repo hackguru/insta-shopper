@@ -97,65 +97,42 @@ function authenticateUsers(req, res, next, isBuyer){
 	});	
 }
 
-router.get('/userId/:type/:device/:regId', function(req, res, next) {
-	if(!req.params.type || !req.params.device || !req.params.regId){
-		res.status(400).json({ error: 'wrong parameters supplied' });
+router.get('/userId', function(req, res, next) {
+	if(!req.user){
+		res.status(401).json({ error: 'unauthorized user' });
 		return;
 	}
-    var deviceKey = "iosIds";
-    if(req.params.device === "android"){
-    	deviceKey = "androidIds";
-    }
-	var typeKey = "merchantRegisterationIds";
-	if(req.params.type === "buyer") {
-		typeKey = "buyerRegisterationIds"
-	}
-
-	var queryObject = {};
-	queryObject[typeKey+'.'+deviceKey] = req.params.regId;
-	queryObject['$or'] = [ { type: req.params.type }, { type: "both" } ] 
-	req.db.User.findOne( queryObject,  function(err, toReturn){
-		if(!err && toReturn){
-			res.json({ userId: toReturn._id});
-		} else {
-			res.status(404).json({ error: 'failed to find user' });
-		}
-	});
+	res.json({ userId: req.user._id});
 });
 
-router.post('/updateRegId/:type/:device/:oldRegId/:newRegId', function(req, res, next) {
-	if(!req.params.type || !req.params.device || !req.params.oldRegId){
-		res.status(400).json({ error: 'wrong parameters supplied' });
+router.post('/updateRegId', function(req, res, next) {
+	var newRegId = req.body.newRegId;
+	if(!req.user){
+		res.status(401).json({ error: 'unauthorized user' });
 		return;
 	}
     var deviceKey = "iosIds";
-    if(req.params.device === "android"){
-    	deviceKey = "androidIds";
+    if(req.device === "android"){
+      deviceKey = "androidIds";
     }
-	var typeKey = "merchantRegisterationIds";
-	if(req.params.type === "buyer") {
-		typeKey = "buyerRegisterationIds"
+    var typeKey = "merchantRegisterationIds";
+    if(req.userType === "buyer") {
+      typeKey = "buyerRegisterationIds"
+    }    
+	var index = user[typeKey][deviceKey].indexOf(oldRegId);
+	user[typeKey][deviceKey].splice(index, 1);
+	if(req.params.newRegId) {
+		user[typeKey][deviceKey].push(req.params.newRegId);
 	}
-
-	var queryObject = {};
-	queryObject[typeKey+'.'+deviceKey] = req.params.oldRegId;
-	queryObject['$or'] = [ { type: req.params.type }, { type: "both" } ] 
-	req.db.User.findOne( queryObject,  function(err, user){
-		if(!err && user){
-			var index = user[typeKey][deviceKey].indexOf(req.params.oldRegId);
-			user[typeKey][deviceKey].splice(index, 1);
-			if(req.params.newRegId) {
-				user[typeKey][deviceKey].push(req.params.newRegId);
-			}
-			user.save();					
-			res.json({ status : 200 });
-		} else {
-			res.status(404).json({ error: 'failed to find user' });
-		}
-	});
+	user.save();					
+	res.json({ status : 200 });
 });
 
 router.get('/:userId/likedMedias', function(req, res, next) {
+	if(!req.user || req.user._id != req.params.userId){
+		res.status(401).json({ error: 'unauthorized user' });
+		return;
+	}
 	var count = req.query.count || 30;
 	var date = Date.parse(req.query.date) || Date.now();
 	req.db.Like.find({likedBy : req.params.userId, likedDate: { $lt: date }})
@@ -173,8 +150,35 @@ router.get('/:userId/likedMedias', function(req, res, next) {
 				});
 });
 
+router.get('/:userId/newlyLikedMedias', function(req, res, next) {
+	if(!req.user || req.user._id != req.params.userId){
+		res.status(401).json({ error: 'unauthorized user' });
+		return;
+	}
+	var date = Date.parse(req.query.date);
+	if(!date){
+		res.status(404).json({ error: 'no min date passed' });
+	}
+	req.db.Like.find({likedBy : req.params.userId, likedDate: { $gt: date }})
+				.sort({'likedDate': 'desc'})
+				.limit(count)
+				.populate({ path: 'media' })
+				.exec(function(err, medias) {
+					if(!err){
+						res.json({
+							results: medias
+						});
+					} else {
+						res.status(404).json({ error: 'could not find any records' });
+					}
+				});
+});
 
 router.get('/:userId/postedMedias', function(req, res, next) {
+	if(!req.user || req.user._id != req.params.userId){
+		res.status(401).json({ error: 'unauthorized user' });
+		return;
+	}
 	var count = req.query.count || 30;
 	var date = Date.parse(req.query.date) || Date.now();
 	req.db.Media.find({owner : req.params.userId, created: { $lt: date }})
@@ -192,6 +196,10 @@ router.get('/:userId/postedMedias', function(req, res, next) {
 });
 
 router.get('/:userId/newlyPostedMedias', function(req, res, next) {
+	if(!req.user || req.user._id != req.params.userId){
+		res.status(401).json({ error: 'unauthorized user' });
+		return;
+	}
 	var date = Date.parse(req.query.date);
 	if(!date){
 		res.status(404).json({ error: 'no min date passed' });
@@ -210,9 +218,12 @@ router.get('/:userId/newlyPostedMedias', function(req, res, next) {
 });
 
 
-router.get('/:userId', function(req, res, next) {
-	req.db.User.findOne({_id : req.params.userId}, function(err, user) {
+router.get('/merchant/:userId', function(req, res, next) {
+	req.db.User.findOne({_id : req.params.userId, $or: [ { type: "merchant" }, { type: "both" } ] }, function(err, user) {
 		if(!err){
+			// For security reasons
+			delete user.buyerRegisterationIds;
+			delete user.merchantRegisterationIds;
 			res.json(user);
 		} else {
 			res.status(404).json({ error: 'could not find any records' });
@@ -220,10 +231,9 @@ router.get('/:userId', function(req, res, next) {
 	});
 })
 
-router.get('/:userId/logout/:type/:device', function(req, res, next) {
-	var regId = req.body.regId;
-	if(!req.params.type || !req.params.device || !regId){
-		res.status(400).json({ error: 'wrong parameters supplied' });
+router.get('/:userId/logout', function(req, res, next) {
+	if(!req.user){
+		res.status(401).json({ error: 'unauthorized user' });
 		return;
 	}
     var deviceKey = "iosIds";
@@ -234,17 +244,10 @@ router.get('/:userId/logout/:type/:device', function(req, res, next) {
 	if(req.params.type === "buyer") {
 		typeKey = "buyerRegisterationIds"
 	}
-
-	req.db.User.findOne({_id : req.params.userId}, function(err, user) {
-		if(!err && user){
-			var index = user[typeKey][deviceKey].indexOf(regId);
-			user[typeKey][deviceKey].splice(index, 1);
-			user.save();					
-			res.json({ status : 200 });
-		} else {
-			res.status(404).json({ error: 'could not find any records' });
-		}
-	});
+	var index = user[typeKey][deviceKey].indexOf(regId);
+	user[typeKey][deviceKey].splice(index, 1);
+	user.save();					
+	res.json({ status : 200 });
 });
 
 

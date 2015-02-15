@@ -4,7 +4,11 @@ var url = require('url');
 
 router.post('/matchScreenShot/:mediaId', function(req, res, next) {
 	req.db.Media.findOne({ _id: req.params.mediaId }, function (err, media) {
-	  if (!err){
+	  if (!err && media){
+	  	if(media.owner.toString() != req.user._id,toString()){
+			res.status(401).json({ error: 'unauthorized user' });
+			return;
+	  	}
 		req.uploader(req, res, function(err, s3Response){
 			if(err){
 			  	console.log(err);
@@ -54,11 +58,11 @@ router.post('/match/:mediaId', function(req, res, next) {
 	if (req.body.productDescription) {
 		updateObj["productDescription"] = req.body.productDescription;
 	}
-	req.db.Media.update({ _id: req.params.mediaId }, updateObj, function (err) {
+	req.db.Media.update({ _id: req.params.mediaId, owner: req.user }, updateObj, function (err) {
 	  if (err){
 	  	console.log(err);
 	  	//TODO
-		res.end(JSON.stringify({ statusCode: 500 }));
+		res.end(JSON.stringify({ statusCode: 401 }));
 	  } else {
 		res.end(JSON.stringify({ statusCode: 200 }));
 	  }
@@ -68,6 +72,10 @@ router.post('/match/:mediaId', function(req, res, next) {
 router.get('/:mediaId', function(req, res, next) {
 	req.db.Media.findOne({_id : req.params.mediaId}, function(err, media) {
 		if(!err && media){
+		  	if(media.owner.toString() != req.user._id,toString()){
+				res.status(401).json({ error: 'unauthorized user' });
+				return;
+		  	}
 			res.json(media);
 		} else {
 			res.status(404).json({ error: 'could not find any records' });

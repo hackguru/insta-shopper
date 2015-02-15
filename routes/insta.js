@@ -16,6 +16,9 @@ router.post('/post', function(req, res, next) {
 	  // time: 1422761294,
 	  // subscription_id: 16642046,
 	  // data: { media_id: '910510192435687045_1686295026' } }],
+
+	  // TODO: HOW TO KNOW THIS IS COMMING FROM INSTA??
+	  
 	req.body.forEach(function(currentValue){
 		var userId = currentValue.object_id;
 		var mediaId = currentValue.data.media_id;

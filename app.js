@@ -78,6 +78,35 @@ function instaSetup(req, res, next){
     return next();
 }
 
+function getApiRequestUser(req, res, next){
+  var req.reqId = req.get('token');
+  var req.device =  req.get('device');
+  var req.userType = req.get('userType');
+  if(req.reqId && req.device && req.userType){
+    var deviceKey = "iosIds";
+    if(req.device === "android"){
+      deviceKey = "androidIds";
+    }
+    var typeKey = "merchantRegisterationIds";
+    if(req.userType === "buyer") {
+      typeKey = "buyerRegisterationIds"
+    }    
+    var queryObject = {};
+    queryObject[typeKey+'.'+deviceKey] = req.reqId;
+    queryObject['$or'] = [ { type: req.userType }, { type: "both" } ] 
+    req.db.User.findOne( queryObject,  function(err, user){
+      if(!err && user){
+        req.user = user; 
+        return next();
+      } else {
+        // TODO - log this
+        return next();
+      }
+    });
+  } else {
+    return next();
+  }
+}
 
 var app = express();
 
@@ -94,9 +123,9 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
-app.use('/users', instaSetup, db, users);
+app.use('/users', instaSetup, db, getApiRequestUser, users);
 app.use('/insta', instaSetup, db, insta);
-app.use('/media', db, framerSetup, setupS3, media);
+app.use('/media', db, framerSetup, setupS3, getApiRequestUser, media);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
