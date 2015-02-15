@@ -110,33 +110,23 @@ router.get('/:userId/likedMedias', function(req, res, next) {
 		res.status(401).json({ error: 'unauthorized user' });
 		return;
 	}
-	var count = req.query.count || 30;
-	var date = Date.parse(req.query.date) || Date.now();
-	req.db.Like.find({likedBy : req.params.userId, likedDate: { $lt: date }})
-				.sort({'likedDate': 'desc'})
-				.limit(count)
-				.populate({ path: 'media' })
-				.exec(function(err, medias) {
-					if(!err){
-						res.json({
-							results: medias
-						});
-					} else {
-						res.status(404).json({ error: 'could not find any records' });
-					}
-				});
-});
-
-router.get('/:userId/newlyLikedMedias', function(req, res, next) {
-	if(!req.user || req.user._id != req.params.userId){
-		res.status(401).json({ error: 'unauthorized user' });
-		return;
+	var count = req.query.count || 0;
+	var startDate = (req.query.startDate) ? Date.parse(req.query.startDate) : undefined;
+	var endDate = (req.query.endDate) ? Date.parse(req.query.endDate) : undefined;
+	var createdDateQuery = {};
+	if(startDate && endDate){
+		createdDateQuery['$lte'] = endDate;
+		createdDateQuery['$gte'] = startDate;
+	} else  if (startDate && !endDate){
+		createdDateQuery['$gt'] = startDate;
+	} else if (!startDate && endDate){
+		createdDateQuery['$lt'] = endDate;
+		count = count || 30;
+	} else {
+		count = count || 30;
+		createdDateQuery['$lte'] = Date.now();
 	}
-	var date = Date.parse(req.query.date);
-	if(!date){
-		res.status(404).json({ error: 'no min date passed' });
-	}
-	req.db.Like.find({likedBy : req.params.userId, likedDate: { $gt: date }})
+	req.db.Like.find({likedBy : req.params.userId, likedDate: createdDateQuery})
 				.sort({'likedDate': 'desc'})
 				.limit(count)
 				.populate({ path: 'media' })
@@ -156,9 +146,23 @@ router.get('/:userId/postedMedias', function(req, res, next) {
 		res.status(401).json({ error: 'unauthorized user' });
 		return;
 	}
-	var count = req.query.count || 30;
-	var date = Date.parse(req.query.date) || Date.now();
-	req.db.Media.find({owner : req.params.userId, created: { $lt: date }})
+	var count = req.query.count || 0;
+	var startDate = (req.query.startDate) ? Date.parse(req.query.startDate) : undefined;
+	var endDate = (req.query.endDate) ? Date.parse(req.query.endDate) : undefined;
+	var createdDateQuery = {};
+	if(startDate && endDate){
+		createdDateQuery['$lte'] = endDate;
+		createdDateQuery['$gte'] = startDate;
+	} else  if (startDate && !endDate){
+		createdDateQuery['$gt'] = startDate;
+	} else if (!startDate && endDate){
+		createdDateQuery['$lt'] = endDate;
+		count = count || 30;
+	} else {
+		count = count || 30;
+		createdDateQuery['$lte'] = Date.now();
+	}
+	req.db.Media.find({owner : req.params.userId, created: createdDateQuery})
 				.sort({'created': 'desc'})
 				.limit(count)
 				.exec(function(err, medias) {
@@ -171,29 +175,6 @@ router.get('/:userId/postedMedias', function(req, res, next) {
 					}
 				});
 });
-
-router.get('/:userId/newlyPostedMedias', function(req, res, next) {
-	if(!req.user || req.user._id != req.params.userId){
-		res.status(401).json({ error: 'unauthorized user' });
-		return;
-	}
-	var date = Date.parse(req.query.date);
-	if(!date){
-		res.status(404).json({ error: 'no min date passed' });
-	}
-	req.db.Media.find({owner : req.params.userId, created: { $gt: date }})
-				.sort({'created': 'desc'})
-				.exec(function(err, medias) {
-					if(!err){
-						res.json({
-							results: medias
-						});
-					} else {
-						res.status(404).json({ error: 'could not find any records' });
-					}
-				});
-});
-
 
 router.get('/merchant/:userId', function(req, res, next) {
 	req.db.User.findOne({_id : req.params.userId, $or: [ { type: "merchant" }, { type: "both" } ] }, function(err, user) {
