@@ -3,12 +3,8 @@ var router = express.Router();
 var url = require('url');
 
 router.post('/matchScreenShot/:mediaId', function(req, res, next) {
-	req.db.Media.findOne({ _id: req.params.mediaId }, function (err, media) {
+	req.db.Media.findOne({ _id: req.params.mediaId,  owner: req.user }, function (err, media) {
 	  if (!err && media){
-	  	if(media.owner.toString() != req.user._id,toString()){
-			res.status(401).json({ error: 'unauthorized user' });
-			return;
-	  	}
 		req.uploader(req, res, function(err, s3Response){
 			if(err){
 			  	console.log(err);
@@ -43,7 +39,7 @@ router.post('/matchScreenShot/:mediaId', function(req, res, next) {
 			});			
 		}else {
 			console.log(err);
-			res.status(400).json({ error: 'could not complete operation' });
+			res.status(401).json({ error: 'unauthorized user or no media' });
 			//TODO
 		}		
 	});
@@ -70,15 +66,11 @@ router.post('/match/:mediaId', function(req, res, next) {
 });
 
 router.get('/:mediaId', function(req, res, next) {
-	req.db.Media.findOne({_id : req.params.mediaId}, function(err, media) {
+	req.db.Media.findOne({_id : req.params.mediaId,  owner: req.user}, function(err, media) {
 		if(!err && media){
-		  	if(media.owner.toString() != req.user._id,toString()){
-				res.status(401).json({ error: 'unauthorized user' });
-				return;
-		  	}
 			res.json(media);
 		} else {
-			res.status(404).json({ error: 'could not find any records' });
+			res.status(401).json({ error: 'unauthorized user or could not find any records' });
 		}
 	});
 });
