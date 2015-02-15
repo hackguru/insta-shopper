@@ -222,33 +222,13 @@ router.post('/updateRegId', function(req, res, next) {
     if(req.userType === "buyer") {
       typeKey = "buyerRegisterationIds"
     }    
-	var index = user[typeKey][deviceKey].indexOf(oldRegId);
+	var index = user[typeKey][deviceKey].indexOf(req.reqId);
 	user[typeKey][deviceKey].splice(index, 1);
-	if(req.params.newRegId) {
-		user[typeKey][deviceKey].push(req.params.newRegId);
+	if(newRegId) {
+		user[typeKey][deviceKey].push(newRegId);
 	}
 	user.save();					
 	res.json({ status : 200 });
 });
-
-router.get('/:userId/logout', function(req, res, next) {
-	if(!req.user){
-		res.status(401).json({ error: 'unauthorized user' });
-		return;
-	}
-    var deviceKey = "iosIds";
-    if(req.params.device === "android"){
-    	deviceKey = "androidIds";
-    }
-	var typeKey = "merchantRegisterationIds";
-	if(req.params.type === "buyer") {
-		typeKey = "buyerRegisterationIds"
-	}
-	var index = user[typeKey][deviceKey].indexOf(regId);
-	user[typeKey][deviceKey].splice(index, 1);
-	user.save();					
-	res.json({ status : 200 });
-});
-
 
 module.exports = router;
