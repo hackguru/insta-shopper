@@ -162,10 +162,13 @@ router.get('/:userId/postedMedias', function(req, res, next) {
 		count = count || 30;
 		createdDateQuery['$lte'] = Date.now();
 	}
+	console.log(createdDateQuery);
 	req.db.Media.find({owner : req.params.userId, created: createdDateQuery})
 				.sort({'created': 'desc'})
 				.limit(count)
 				.exec(function(err, medias) {
+						console.log(medias);
+
 					if(!err){
 						res.json({
 							results: medias
