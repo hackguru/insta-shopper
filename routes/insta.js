@@ -54,7 +54,8 @@ router.post('/post', function(req, res, next) {
 									  "registration_ids" : user.merchantRegisterationIds.androidIds,
 									  "data" : {
 									   	imageUrl: toBeSavedMedia.images.low_resolution.url,
-									   	text: "Do you wanna link the picture you just instagramed?",
+									   	text: "Link the picture you just instagramed",
+									   	postId: toBeSavedMedia._id
 									  }
 									}
 								},
@@ -102,8 +103,8 @@ router.post('/post', function(req, res, next) {
 									note.expiry = Math.floor(Date.now() / 1000) + 60; // Expires 1 min from now.
 									note.badge = 1;
 									note.sound = "ping.aiff";
-									note.alert = "Do you wanna link the picture you just instagramed?";
-									note.payload = {'imageUrl': toBeSavedMedia.images.low_resolution.url};
+									note.alert = "Link the picture you just instagramed";
+									note.payload = {'postId': toBeSavedMedia._id};
 
 									apnConnection.pushNotification(note, myDevice);									
 								});
