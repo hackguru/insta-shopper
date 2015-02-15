@@ -79,9 +79,9 @@ function instaSetup(req, res, next){
 }
 
 function getApiRequestUser(req, res, next){
-  var req.reqId = req.get('token');
-  var req.device =  req.get('device');
-  var req.userType = req.get('userType');
+  req.reqId = req.get('token');
+  req.device =  req.get('device');
+  req.userType = req.get('userType');
   if(req.reqId && req.device && req.userType){
     var deviceKey = "iosIds";
     if(req.device === "android"){
