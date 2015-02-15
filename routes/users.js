@@ -121,9 +121,9 @@ router.get('/:userId/likedMedias', function(req, res, next) {
 		createdDateQuery['$gt'] = startDate;
 	} else if (!startDate && endDate){
 		createdDateQuery['$lt'] = endDate;
-		count = count || 30;
+		count = count || 3;
 	} else {
-		count = count || 30;
+		count = count || 3;
 		createdDateQuery['$lte'] = Date.now();
 	}
 	req.db.Like.find({likedBy : req.params.userId, likedDate: createdDateQuery})
@@ -157,9 +157,9 @@ router.get('/:userId/postedMedias', function(req, res, next) {
 		createdDateQuery['$gt'] = startDate;
 	} else if (!startDate && endDate){
 		createdDateQuery['$lt'] = endDate;
-		count = count || 30;
+		count = count || 3;
 	} else {
-		count = count || 30;
+		count = count || 3;
 		createdDateQuery['$lte'] = Date.now();
 	}
 	req.db.Media.find({owner : req.params.userId, created: createdDateQuery})
