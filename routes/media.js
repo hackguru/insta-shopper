@@ -3,6 +3,9 @@ var router = express.Router();
 var url = require('url');
 
 router.post('/matchScreenShot/:mediaId', function(req, res, next) {
+	if(!req.user){
+		res.status(401).json({ error: 'unauthorized access' });
+	}
 	req.db.Media.findOne({ _id: req.params.mediaId,  owner: req.user }, function (err, media) {
 	  if (!err && media){
 		req.uploader(req, res, function(err, s3Response){
@@ -46,6 +49,9 @@ router.post('/matchScreenShot/:mediaId', function(req, res, next) {
 });
 
 router.post('/match/:mediaId', function(req, res, next) {
+	if(!req.user){
+		res.status(401).json({ error: 'unauthorized access' });
+	}
 	var updateObj = {};
 	if (req.body.linkToProduct) {
 		updateObj["linkToProduct"] = req.body.linkToProduct;
@@ -66,6 +72,9 @@ router.post('/match/:mediaId', function(req, res, next) {
 });
 
 router.get('/:mediaId', function(req, res, next) {
+	if(!req.user){
+		res.status(401).json({ error: 'unauthorized access' });
+	}
 	req.db.Media.findOne({_id : req.params.mediaId,  owner: req.user}, function(err, media) {
 		if(!err && media){
 			res.json(media);
