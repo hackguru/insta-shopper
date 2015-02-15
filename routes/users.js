@@ -218,6 +218,33 @@ router.get('/:userId', function(req, res, next) {
 			res.status(404).json({ error: 'could not find any records' });
 		}
 	});
+})
+
+router.get('/:userId/logout/:type/:device', function(req, res, next) {
+	var regId = req.body.regId;
+	if(!req.params.type || !req.params.device || !regId){
+		res.status(400).json({ error: 'wrong parameters supplied' });
+		return;
+	}
+    var deviceKey = "iosIds";
+    if(req.params.device === "android"){
+    	deviceKey = "androidIds";
+    }
+	var typeKey = "merchantRegisterationIds";
+	if(req.params.type === "buyer") {
+		typeKey = "buyerRegisterationIds"
+	}
+
+	req.db.User.findOne({_id : req.params.userId}, function(err, user) {
+		if(!err && user){
+			var index = user[typeKey][deviceKey].indexOf(regId);
+			user[typeKey][deviceKey].splice(index, 1);
+			user.save();					
+			res.json({ status : 200 });
+		} else {
+			res.status(404).json({ error: 'could not find any records' });
+		}
+	});
 });
 
 
