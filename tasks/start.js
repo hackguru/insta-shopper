@@ -4,6 +4,7 @@ Config.argv()
 		.env()
 		.file({ file: 'config.json' });
 var instagram = require('instagram-node').instagram();
+var apn = require('apn');
 var mongoose = require('mongoose');
 var request = require('request');
 var models = require('../models');
