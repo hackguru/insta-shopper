@@ -49,9 +49,9 @@ function authenticateUsers(req, res, next, isBuyer){
 		  req.db.User.findOrCreate({instaId: result.user.id}, user, function(err, newUser) {
 		    console.log(newUser);
 		    if(isBuyer){
-			    newUser.buyerToken = result.access_token;
+			    newUser["buyerToken"] = result.access_token;
 		    }else{
-			    newUser.merchantToken = result.access_token;
+			    newUser["merchantToken"] = result.access_token;
 		    }
 		    if(newUser.type != user.type){
 		    	newUser.type = "both"
