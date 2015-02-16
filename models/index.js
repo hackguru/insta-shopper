@@ -112,11 +112,13 @@ Media.plugin(findOrCreate);
 var User = new Schema({
   marchantToken: {
     type: String,
-    default: undefined
+    required: false,
+    trim: true
   },
   buyerToken:{
     type: String,
-    default: undefined
+    required: false,
+    trim: true
   },
   username: {
     type: String,
