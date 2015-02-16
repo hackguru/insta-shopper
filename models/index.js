@@ -113,12 +113,12 @@ var User = new Schema({
   marchantToken: {
     type: String,
     required: false,
-    trim: true
+    default: null    
   },
   buyerToken:{
     type: String,
     required: false,
-    trim: true
+    default: null    
   },
   username: {
     type: String,
