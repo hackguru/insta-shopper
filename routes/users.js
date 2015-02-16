@@ -47,7 +47,6 @@ function authenticateUsers(req, res, next, isBuyer){
 			type: isBuyer ? "buyer" : "merchant"
 		  }
 		  req.db.User.findOrCreate({instaId: result.user.id}, user, function(err, newUser) {
-		    console.log(newUser);
 		    if(isBuyer){
 			    newUser["buyerToken"] = result.access_token;
 		    }else{
@@ -95,6 +94,7 @@ function authenticateUsers(req, res, next, isBuyer){
 		    	newUser[regKey] = {};
 		    	newUser[regKey][deviceKey] = [states[1]]; 
 	    	}
+		    console.log(newUser);
 		    newUser.save();
 		  });
 		}
