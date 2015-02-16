@@ -1,5 +1,5 @@
 config.json
 node_modules
-key.pem
-cert.pem
+*.pem
+*.pem
 .DS_Store

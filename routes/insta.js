@@ -28,7 +28,7 @@ router.post('/post', function(req, res, next) {
 					console.log("User is not merchant");
 					return;
 				}
-				req.instagram.use({ access_token: user.token });
+				req.instagram.use({ access_token: user.merchantToken });
 				req.instagram.media(mediaId, function(err, media, remaining, limit) {
 					var newMedia = {
 					  caption: media.caption ? media.caption.text : null,
@@ -91,8 +91,10 @@ router.post('/post', function(req, res, next) {
 	  			    		}
   			    			//ios devices
 	  			    		if(user.merchantRegisterationIds.iosIds && user.merchantRegisterationIds.iosIds.length){
-	  			    			var options = { };
-
+	  			    			var options = { 
+	  			    				cert: 'merchantApnCert.pem',
+	  			    				key: 'merchantApnKey.pem'
+	  			    			};
 								var apnConnection = new apn.Connection(options);
 
 								user.merchantRegisterationIds.iosIds.forEach(function(regId){

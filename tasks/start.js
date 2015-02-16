@@ -23,7 +23,7 @@ setInterval(function(){
 	.limit(Config.get("USERS_PER_WORKER_RUN"))
 	.exec(function(err, users) {
 		users.forEach(function(user){
-			instagram.use({ access_token: user.token });
+			instagram.use({ access_token: user.buyerToken });
 			instagram.user_self_liked({ count:Config.get("WORKER_RUN_INTERVAL_SECONDS")/*assume users do one like persecond*/ },
 			function(err, medias, pagination, remaining, limit) {
 				if(!err){
@@ -44,6 +44,7 @@ setInterval(function(){
 				 							if(mediaIdsToExclude.indexOf(media._id.toString())>=0){
 				 								return;
 				 							} else {
+						  			    		//android devices
 				     							if(user.buyerRegisterationIds.androidIds && user.buyerRegisterationIds.androidIds.length){
 				     								debugger;
 				     								request(
@@ -56,8 +57,7 @@ setInterval(function(){
 				     										"data" : {
 				     											imageUrl: media.images.low_resolution.url,
 				     											text: media.productDescription,
-				     											productLink: media.linkToProduct,
-				     											linkSrceenShot: media.productLinkScreenshot
+				     											postId: media._id
 				     										}
 				     									}
 				     								},
@@ -98,7 +98,29 @@ setInterval(function(){
 			    			     							console.log(error);
 			    			     						}
 			    			     					});			     								
-												}				 								
+												}
+					  			    			//ios devices
+						  			    		if(user.buyerRegisterationIds.iosIds && user.buyerRegisterationIds.iosIds.length){
+						  			    			var options = { 
+						  			    				cert: 'buyerApnCert.pem',
+						  			    				key: 'buyerApnKey.pem'
+						  			    			};
+													var apnConnection = new apn.Connection(options);
+
+													user.buyerRegisterationIds.iosIds.forEach(function(regId){
+														var myDevice = new apn.Device(regId);
+
+														var note = new apn.Notification();
+
+														note.expiry = Math.floor(Date.now() / 1000) + 60; // Expires 1 min from now.
+														note.badge = 1;
+														note.sound = "ping.aiff";
+														note.alert = media.productDescription;
+														note.payload = {'postId': media._id};
+
+														apnConnection.pushNotification(note, myDevice);									
+													});
+												}
 				 							}
 										});
 									} else {
