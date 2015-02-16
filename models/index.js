@@ -110,15 +110,13 @@ Media.pre('save', autoUpdateTimeStamp);
 Media.plugin(findOrCreate);
 
 var User = new Schema({
-  marchantToken: {
+  merchantToken: {
     type: String,
-    required: false,
-    default: null    
+    required: false
   },
   buyerToken:{
     type: String,
-    required: false,
-    default: null    
+    required: false
   },
   username: {
     type: String,
