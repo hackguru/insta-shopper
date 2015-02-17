@@ -137,7 +137,7 @@ router.get('/:userId/likedMedias', function(req, res, next) {
 				.limit(count)
 				.populate({ path: 'media' })
 				// TODO:  remove sensative stuff from user
-				.populate({ path: 'media.owner' })
+				.populate({ path: 'media owner' })
 				.exec(function(err, medias) {
 					if(!err){
 						res.json({
