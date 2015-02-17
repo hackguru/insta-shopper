@@ -29,19 +29,20 @@ setInterval(function(){
 			function(err, medias, pagination, remaining, limit) {
 				console.log(user.username + " has " + remaining + " remaining insta calls left out of " + limit);
 				if(!err){
+					console.log("most recent likes for " + user.username + ":");
+					console.log(medias);
 					user.lastQueried = Date.now();
 					user.save();
 					if(medias.length){
  						var allMediaInstaIds = medias.map(function(value){ return value.id; });
- 						debugger;
 						db.Media.find({instaId: { $in: allMediaInstaIds }, isMatchedWithProduct : true } , function (err, mediasFromDB) {
 							//gettting what we should exclude
-							debugger;
 							if(!err){
 								db.Like.find( {media: { $in: mediasFromDB} }, function(err, likesToExclude){
-									debugger;
 									if(!err){
 										var mediaIdsToExclude = likesToExclude.map(function(value){ return value.media.toString()})
+										console.log("likes (instaIds) to exclude for user " + user.username);
+										console.log(mediaIdsToExclude);
 				 						mediasFromDB.forEach(function(media){
 				 							if(mediaIdsToExclude.indexOf(media._id.toString())>=0){
 				 								return;
@@ -59,7 +60,6 @@ setInterval(function(){
 
 						  			    		//android devices
 				     							if(user.buyerRegisterationIds.androidIds && user.buyerRegisterationIds.androidIds.length){
-				     								debugger;
 				     								request(
 				     								{
 				     									uri: Config.get("GCM_SEND_URL"),
