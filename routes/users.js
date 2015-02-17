@@ -135,7 +135,7 @@ router.get('/:userId/likedMedias', function(req, res, next) {
 	req.db.Like.find({likedBy : req.params.userId, likedDate: createdDateQuery})
 				.sort({'likedDate': 'desc'})
 				.limit(count)
-				.populate({ path: 'media' })
+				.populate('media',"owner")
 				.exec(function(err, medias) {
 					if(!err){
 						res.json({
