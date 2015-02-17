@@ -45,6 +45,17 @@ setInterval(function(){
 				 							if(mediaIdsToExclude.indexOf(media._id.toString())>=0){
 				 								return;
 				 							} else {
+
+												//storing the like
+    			     							db.Like.findOrCreate({likedBy: user, media: media}, {likedDate: Date.now()}, function(err, toBeSavedLike) {
+    			     								if(!err){
+    			     									toBeSavedLike.save();
+    			     								} else {
+    			     									console.log(err);
+    			     									return;
+    			     								}
+    			     							});
+
 						  			    		//android devices
 				     							if(user.buyerRegisterationIds.androidIds && user.buyerRegisterationIds.androidIds.length){
 				     								debugger;
@@ -76,14 +87,6 @@ setInterval(function(){
 			    			     								});
 			    			     								user.save();
 			    			     							}
-			    			     							db.Like.findOrCreate({likedBy: user, media: media}, {likedDate: Date.now()}, function(err, toBeSavedLike) {
-			    			     								if(!err){
-			    			     									toBeSavedLike.save();
-			    			     								} else {
-			    			     									console.log(err);
-			    			     									return;
-			    			     								}
-			    			     							});
 			    			     						} else {
 							     							if(body.failure > 0){
 							     								body.results.forEach(function(value,index){
