@@ -38,9 +38,9 @@ setInterval(function(){
 						db.Media.find({instaId: { $in: allMediaInstaIds }, isMatchedWithProduct : true } , function (err, mediasFromDB) {
 							//gettting what we should exclude
 							if(!err){
-								console.log("recent likes for user " + user.username + "that is in our db");
+								console.log("recent likes for user " + user.username + " that is in our db");
 								console.log(mediasFromDB);
-								db.Like.find( {media: { $in: mediasFromDB} }, function(err, likesToExclude){
+								db.Like.find( {media: { $in: mediasFromDB}, owner:user }, function(err, likesToExclude){
 									if(!err){
 										var mediaIdsToExclude = likesToExclude.map(function(value){ return value.media.toString()})
 										console.log("likes (instaIds) to exclude for user " + user.username);
