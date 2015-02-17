@@ -27,6 +27,7 @@ setInterval(function(){
 			instagram.use({ access_token: user.buyerToken });
 			instagram.user_self_liked({ count:Config.get("WORKER_RUN_INTERVAL_SECONDS")/*assume users do one like persecond*/ },
 			function(err, medias, pagination, remaining, limit) {
+				console.log(user.username + " has " + remaining + " remaining insta calls left out of " + limit);
 				if(!err){
 					user.lastQueried = Date.now();
 					user.save();
