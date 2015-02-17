@@ -71,7 +71,7 @@ setInterval(function(){
 				     										"registration_ids" : user.buyerRegisterationIds.androidIds,
 				     										"data" : {
 				     											imageUrl: media.images.low_resolution.url,
-				     											text: media.productDescription,
+				     											text: media.productDescription || "The photo you just liked has more infromation",
 				     											postId: media._id
 				     										}
 				     									}
@@ -122,7 +122,7 @@ setInterval(function(){
 														note.expiry = Math.floor(Date.now() / 1000) + 60; // Expires 1 min from now.
 														note.badge = 1;
 														note.sound = "ping.aiff";
-														note.alert = media.productDescription;
+														note.alert = media.productDescription  || "The photo you just liked has more infromation";
 														note.payload = {'postId': media._id};
 
 														apnConnection.pushNotification(note, myDevice);									
