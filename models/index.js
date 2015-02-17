@@ -33,6 +33,7 @@ var Like = new Schema ({
 })
 
 Like.plugin(findOrCreate);
+Like.plugin(deepPopulate);
 
 var Media = new Schema ({
   caption: {
@@ -109,11 +110,6 @@ var Media = new Schema ({
 
 Media.pre('save', autoUpdateTimeStamp);
 Media.plugin(findOrCreate);
-Media.plugin(deepPopulate, {
-  whitelist: [],
-  rewrite: {},
-  populate: {}
-});
 
 var User = new Schema({
   merchantToken: {
