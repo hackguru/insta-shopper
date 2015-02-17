@@ -109,7 +109,7 @@ var Media = new Schema ({
 
 Media.pre('save', autoUpdateTimeStamp);
 Media.plugin(findOrCreate);
-Meida.plugin(deepPopulate);
+Media.plugin(deepPopulate);
 
 var User = new Schema({
   merchantToken: {
