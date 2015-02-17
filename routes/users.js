@@ -135,7 +135,6 @@ router.get('/:userId/likedMedias', function(req, res, next) {
 	req.db.Like.find({likedBy : req.params.userId, likedDate: createdDateQuery})
 				.sort({'likedDate': 'desc'})
 				.limit(count)
-				.populate({ path: 'media' })
 				// TODO:  remove sensative stuff from user
 				.deepPopulate('media.owner')
 				.exec(function(err, medias) {
