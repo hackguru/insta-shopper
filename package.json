@@ -22,6 +22,7 @@
     "instagram-node": "*",
     "framer": "*",
     "aws-sdk": "*",
-    "apn" : "*"
+    "apn" : "*",
+    "mongoose-deep-populate" : "*"
   }
 }

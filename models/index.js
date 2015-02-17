@@ -3,6 +3,7 @@ var Schema = mongoose.Schema;
 var userTypes = 'buyer merchant both'.split(' ');
 var mediaTypes =  'image video'.split(' ' );
 var findOrCreate = require('mongoose-findorcreate');
+var deepPopulate = require('mongoose-deep-populate');
 
 var autoUpdateTimeStamp = function (next) {
   now = new Date();
@@ -108,6 +109,7 @@ var Media = new Schema ({
 
 Media.pre('save', autoUpdateTimeStamp);
 Media.plugin(findOrCreate);
+Meida.plugin(deepPopulate);
 
 var User = new Schema({
   merchantToken: {
