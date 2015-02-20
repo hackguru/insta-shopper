@@ -188,7 +188,7 @@ router.get('/:userId/recommendedMerchants', function(req, res, next) {
 		res.status(401).json({ error: 'unauthorized user' });
 		return;
 	}
-	req.db.User.find({_id : req.params.userId, $or: [ { type: "merchant" }, { type: "both" } ] }, function(err, merchants) {
+	req.db.User.find({ $or: [ { type: "merchant" }, { type: "both" } ] }, function(err, merchants) {
 		if(!err){
 			//TODO REMOVE Sensative info
 			res.json({
