@@ -183,6 +183,23 @@ router.get('/:userId/postedMedias', function(req, res, next) {
 				});
 });
 
+router.get('/:userId/recommendedMerchants', function(req, res, next) {
+	if(!req.user || req.user._id != req.params.userId){
+		res.status(401).json({ error: 'unauthorized user' });
+		return;
+	}
+	req.db.User.find({_id : req.params.userId, $or: [ { type: "merchant" }, { type: "both" } ] }, function(err, merchants) {
+		if(!err){
+			//TODO REMOVE Sensative info
+			res.json({
+				results: merchants
+			});
+		} else {
+			res.status(404).json({ error: 'could not find any records' });
+		}
+	});
+});
+
 router.get('/merchant/:userId', function(req, res, next) {
 	req.db.User.findOne({_id : req.params.userId, $or: [ { type: "merchant" }, { type: "both" } ] }, function(err, user) {
 		if(!err){
