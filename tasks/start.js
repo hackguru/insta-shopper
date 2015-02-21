@@ -66,7 +66,7 @@ setInterval(function(){
 				     								{
 				     									uri: Config.get("GCM_SEND_URL"),
 				     									method: "POST",
-				     									headers: {Authorization:("key="+Config.get("GCM_API_KEY"))},
+				     									headers: {Authorization:("key="+Config.get("BUYER_GCM_API_KEY"))},
 				     									json: {
 				     										"registration_ids" : user.buyerRegisterationIds.androidIds,
 				     										"data" : {

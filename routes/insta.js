@@ -49,7 +49,7 @@ router.post('/post', function(req, res, next) {
 								{
 									uri: Config.get("GCM_SEND_URL"),
 									method: "POST",
-									headers: {Authorization:("key="+Config.get("GCM_API_KEY"))},
+									headers: {Authorization:("key="+Config.get("MERCHANT_GCM_API_KEY"))},
 									json: {
 									  "registration_ids" : user.merchantRegisterationIds.androidIds,
 									  "data" : {
