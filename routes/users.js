@@ -34,10 +34,10 @@ function authenticateUsers(req, res, next, isBuyer){
 	req.instagram.authorize_user(req.query.code, redirectUrl, function(err, result) {
 		if (err) {
 		  console.log(err.body);
-		  res.send("Didn't work");
+		  res.render('fail');
 		} else {
 		  console.log('Yay! Access token is ' + result.access_token);
-		  res.send('You made it!!');
+		  res.render('success');
 		  var user = {
 		  	bio: result.user.bio,
 			fullName: result.user.full_name,
