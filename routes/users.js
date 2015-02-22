@@ -205,13 +205,14 @@ router.post('/:userId/opened/:mediaId', function(req, res, next) {
 		res.status(401).json({ error: 'unauthorized user' });
 		return;
 	}
-	req.db.Open.create({ openeBy: req.user, openedDate: Date.now(), media: req.params.mediaId }, function(err) {
+	req.db.Open.create({ openedBy: req.user, openedDate: Date.now(), media: req.params.mediaId }, function(err) {
 		if(!err){
 			res.json({
 				status: "ok"
 			});
 		} else {
 			res.status(500).json({ error: 'could not insert the like record' });
+			console.log(err);
 		}
 	});
 });
