@@ -203,3 +203,4 @@ User.plugin(findOrCreate);
 exports.Media = Media;
 exports.User = User;
 exports.Like = Like;
+exports.Open = Open;
