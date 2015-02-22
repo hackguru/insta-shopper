@@ -5,6 +5,7 @@ var url = require('url');
 router.post('/matchScreenShot/:mediaId', function(req, res, next) {
 	if(!req.user){
 		res.status(401).json({ error: 'unauthorized access' });
+		return;
 	}
 	req.db.Media.findOne({ _id: req.params.mediaId,  owner: req.user }, function (err, media) {
 	  if (!err && media){
@@ -51,6 +52,7 @@ router.post('/matchScreenShot/:mediaId', function(req, res, next) {
 router.post('/match/:mediaId', function(req, res, next) {
 	if(!req.user){
 		res.status(401).json({ error: 'unauthorized access' });
+		return;
 	}
 	var updateObj = {};
 	if (req.body.linkToProduct) {
@@ -58,6 +60,10 @@ router.post('/match/:mediaId', function(req, res, next) {
 		updateObj["isMatchedWithProduct"] = true;		
 	}
 	if (req.body.productDescription) {
+		if(req.body.productDescription.length > 46){
+			res.status(400).json({ error: "lengh of description cannot be more than 46 characters"});
+			return;
+		}
 		updateObj["productDescription"] = req.body.productDescription;
 	}
 	req.db.Media.update({ _id: req.params.mediaId, owner: req.user }, updateObj, function (err) {
@@ -74,6 +80,7 @@ router.post('/match/:mediaId', function(req, res, next) {
 router.get('/:mediaId', function(req, res, next) {
 	if(!req.user){
 		res.status(401).json({ error: 'unauthorized access' });
+		return;
 	}
 	req.db.Media.findOne({_id : req.params.mediaId,  owner: req.user}, function(err, media) {
 		if(!err && media){

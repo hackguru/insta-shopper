@@ -200,6 +200,22 @@ router.get('/:userId/recommendedMerchants', function(req, res, next) {
 	});
 });
 
+router.post('/:userId/opened/:mediaId', function(req, res, next) {
+	if(!req.user || req.user._id != req.params.userId){
+		res.status(401).json({ error: 'unauthorized user' });
+		return;
+	}
+	req.db.Open.create({ openeBy: req.user, openedDate: Date.now(), media: req.params.mediaId }, function(err) {
+		if(!err){
+			res.json({
+				status: "ok"
+			});
+		} else {
+			res.status(500).json({ error: 'could not insert the like record' });
+		}
+	});
+});
+
 router.get('/merchant/:userId', function(req, res, next) {
 	req.db.User.findOne({_id : req.params.userId, $or: [ { type: "merchant" }, { type: "both" } ] }, function(err, user) {
 		if(!err){

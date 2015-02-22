@@ -14,6 +14,24 @@ var autoUpdateTimeStamp = function (next) {
   next();
 };
 
+var Open = new Schema ({
+    openedBy: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+      required : true,
+    },
+    openedDate: {
+      type: Date,
+      default: Date.now,
+      required: true,     
+    },
+    media: {
+      type: Schema.Types.ObjectId,
+      ref: 'Media',      
+      required : true,
+    }
+});
+
 var Like = new Schema ({
     likedBy: {
       type: Schema.Types.ObjectId,
@@ -30,7 +48,7 @@ var Like = new Schema ({
       ref: 'Media',      
       required : true,
     }
-})
+});
 
 Like.plugin(findOrCreate);
 Like.plugin(deepPopulate);
