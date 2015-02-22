@@ -67,7 +67,8 @@ function db(req, res, next) {
     req.db = {
         User: connection.model('User', models.User, 'users'),
         Media: connection.model('Media', models.Media, 'medias'),
-        Like: connection.model('Like', models.Like, 'likes')
+        Like: connection.model('Like', models.Like, 'likes'),
+        Open: connection.model('Open', models.Open, 'opens')
     };
     return next();
 };
