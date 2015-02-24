@@ -104,7 +104,7 @@ router.post('/post', function(req, res, next) {
 
 									note.expiry = Math.floor(Date.now() / 1000) + 60; // Expires 1 min from now.
 									note.badge = 1;
-									note.sound = "ping.aiff";
+									// note.sound = "ping.aiff";
 									note.alert = "Link the picture you just instagramed";
 									note.payload = {'postId': toBeSavedMedia._id};
 

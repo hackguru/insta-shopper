@@ -186,6 +186,10 @@ var User = new Schema({
     type: Date,
     default: null    
   },
+  canBeFeatured : {
+    type: Boolean,
+    default: false
+  },
   merchantRegisterationIds:{
     androidIds : [String],
     iosIds: [String]
