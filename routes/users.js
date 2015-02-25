@@ -39,14 +39,14 @@ function authenticateUsers(req, res, next, isBuyer){
 		  console.log('Yay! Access token is ' + result.access_token);
 		  res.render('success');
 		  var user = {
-		  	bio: result.user.bio,
-			fullName: result.user.full_name,
-			profilePicture: result.user.profile_picture,
 			username: result.user.username,
-			website: result.user.website,
 			type: isBuyer ? "buyer" : "merchant"
 		  }
 		  req.db.User.findOrCreate({instaId: result.user.id}, user, function(err, newUser) {
+		  	newUser.bio = result.user.bio;
+			newUser.fullName = result.user.full_name;
+			newUser.profilePicture = result.user.profile_picture;
+			newUser.website = result.user.website;
 		    if(isBuyer){
 			    newUser.buyerToken = result.access_token;
 		    	console.log("It's a buyer with token: " + newUser.buyerToken);			    
