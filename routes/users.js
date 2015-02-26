@@ -255,7 +255,6 @@ router.post('/updateRegId', function(req, res, next) {
 
 router.post('/newUnregisteredMerchant/:username', function(req, res, next) {
 	//TODO: seccure this call
-	debugger;
 	//Gettingn a random access token
 	var filter = {
 		$or:[
@@ -266,7 +265,6 @@ router.post('/newUnregisteredMerchant/:username', function(req, res, next) {
 	var fields = {merchantToken:1, buyerToken:1};
 	var options = { limit: 1 }
 	req.db.User.findRandom(filter, fields, options, function (err, userWithToken) {
-		debugger;
 		userWithToken = userWithToken[0];
 		if(!err && userWithToken){
 			var token;
@@ -278,6 +276,7 @@ router.post('/newUnregisteredMerchant/:username', function(req, res, next) {
 			req.instagram.use({ access_token: token });
 			req.instagram.user_search(req.params.username, { count: 1 }, function(err, userFromInsta, pagination, remaining, limit) {
 				debugger;
+				userFromInsta = userFromInsta[0];
 				console.log(userFromInsta.username + " has " + remaining + " remaining insta calls left out of " + limit);
 				if(!err && userFromInsta){
 					console.log("most recent likes for " + user.username + ":");
