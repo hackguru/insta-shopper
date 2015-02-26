@@ -16,12 +16,12 @@ setInterval(function(){
 	console.log('starting new run of updating unregistered brands posts');
 	db.User
 	.find({ $and:[
-		$or: [ { type: "merchant" }, { type: "both" } ],
-		$or:[{merchantToken: {$exists:false}}, {merchantToken: null}, {merchantToken: ""}],
+		{$or:[ { type: "merchant" }, { type: "both" } ]},
+		{$or:[{merchantToken: {$exists:false}}, {merchantToken: null}, {merchantToken: ""}]},
 		{username: {$exists:true}},
 		{username: {$ne:null}},
-		{username: {$ne:""}}]
-	})
+		{username: {$ne:""}}
+	]})
 	.exec(function(err, users) {
 		users.forEach(function(user){
 			console.log(user);
