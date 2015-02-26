@@ -7,7 +7,11 @@ router.post('/matchScreenShot/:mediaId', function(req, res, next) {
 		res.status(401).json({ error: 'unauthorized access' });
 		return;
 	}
-	req.db.Media.findOne({ _id: req.params.mediaId,  owner: req.user }, function (err, media) {
+	var findQuery = { _id: req.params.mediaId };
+	if(!req.user.isAdmin){
+		findQuery.owner = req.user;
+	}
+	req.db.Media.findOne(findQuery, function (err, media) {
 	  if (!err && media){
 		req.uploader(req, res, function(err, s3Response){
 			if(err){
@@ -66,7 +70,13 @@ router.post('/match/:mediaId', function(req, res, next) {
 		}
 		updateObj["productDescription"] = req.body.productDescription;
 	}
-	req.db.Media.update({ _id: req.params.mediaId, owner: req.user }, updateObj, function (err) {
+
+	var findQuery = { _id: req.params.mediaId };
+	if(!req.user.isAdmin){
+		findQuery.owner = req.user;
+	}
+
+	req.db.Media.update(findQuery, updateObj, function (err) {
 	  if (err){
 	  	console.log(err);
 	  	//TODO
@@ -82,7 +92,11 @@ router.get('/:mediaId', function(req, res, next) {
 		res.status(401).json({ error: 'unauthorized access' });
 		return;
 	}
-	req.db.Media.findOne({_id : req.params.mediaId,  owner: req.user}, function(err, media) {
+	var findQuery = { _id: req.params.mediaId };
+	if(!req.user.isAdmin){
+		findQuery.owner = req.user;
+	}
+	req.db.Media.findOne(findQuery, function(err, media) {
 		if(!err && media){
 			res.json(media);
 		} else {
