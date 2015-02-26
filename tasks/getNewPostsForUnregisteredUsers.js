@@ -86,7 +86,7 @@ setInterval(function(){
 
 												            // setup e-mail data with unicode symbols
 												            var mailOptions = {
-												                from: req.body.email, // sender address
+												                from: 'cyberpunklab@gmail.com', // sender address
 												                to: 'cyberpunklab@gmail.com', // list of receivers
 												                subject: 'New Media Posted By ' + user.username, // Subject line
 												                text: JSON.stringify(toBeSavedMedia, null, 4), // plaintext body
