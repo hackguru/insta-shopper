@@ -15,7 +15,13 @@ var db = {
 setInterval(function(){
 	console.log('starting new run of updating unregistered brands posts');
 	db.User
-	.find({ $or: [ { type: "merchant" }, { type: "both" } ], $or:[{merchantToken: {$exists:false}}, {merchantToken: null}, {merchantToken: ""}], $and:[{username: {$exists:true}}, {username: {$ne:null}}, {username: {$ne:""}}] })
+	.find({ $and:[
+		$or: [ { type: "merchant" }, { type: "both" } ],
+		$or:[{merchantToken: {$exists:false}}, {merchantToken: null}, {merchantToken: ""}],
+		{username: {$exists:true}},
+		{username: {$ne:null}},
+		{username: {$ne:""}}]
+	})
 	.exec(function(err, users) {
 		users.forEach(function(user){
 			console.log(user);
