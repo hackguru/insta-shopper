@@ -171,38 +171,54 @@ router.get('/:userId/postedMedias', function(req, res, next) {
 	}
 
 	var findQuery = {};
-
+	findQuery.created = createdDateQuery;
 	if (req.user.isAdmin) {
-		findQuery["$or"] = [
-			{ $and:[
-			 		{$or:[ { type: "merchant" }, { type: "both" } ]},
-					{$or:[{merchantToken: {$exists:false}}, {merchantToken: null}, {merchantToken: ""}]},
-					{username: {$exists:true}},
-					{username: {$ne:null}},
-					{username: {$ne:""}},
-					{created: createdDateQuery}
-			]},
-			{ $and:[{owner: req.params.userId}, {created: createdDateQuery}] }
-		];
+		req.db.User.find({ $and:[
+			{$or:[ { type: "merchant" }, { type: "both" } ]},
+			{$or:[{merchantToken: {$exists:false}}, {merchantToken: null}, {merchantToken: ""}]},
+			{username: {$exists:true}},
+			{username: {$ne:null}},
+			{username: {$ne:""}}
+		]})
+		.exec(function(err, users) {
+			if(!err && users){
+				users.push(req.user);
+				findQuery.owner = { $in: users };
+				req.db.Media.find(findQuery)
+							.sort({'created': 'desc'})
+							.limit(count)
+							// TODO:  remove sensative stuff from user
+							.populate({ path: 'owner' })
+							.exec(function(err, medias) {
+								if(!err){
+									res.json({
+										results: medias
+									});
+								} else {
+									res.status(404).json({ error: 'could not find any records' });
+								}
+							});
+			} else {
+				res.status(404).json({ error: 'could not find any records' });				
+			}
+		});
 	} else {
 		findQuery.owner = req.params.userId;
-		findQuery.created = createdDateQuery;
+		req.db.Media.find(findQuery)
+					.sort({'created': 'desc'})
+					.limit(count)
+					// TODO:  remove sensative stuff from user
+					.populate({ path: 'owner' })
+					.exec(function(err, medias) {
+						if(!err){
+							res.json({
+								results: medias
+							});
+						} else {
+							res.status(404).json({ error: 'could not find any records' });
+						}
+					});
 	}
-
-	req.db.Media.find(findQuery)
-				.sort({'created': 'desc'})
-				.limit(count)
-				// TODO:  remove sensative stuff from user
-				.populate({ path: 'owner' })
-				.exec(function(err, medias) {
-					if(!err){
-						res.json({
-							results: medias
-						});
-					} else {
-						res.status(404).json({ error: 'could not find any records' });
-					}
-				});
 });
 
 router.get('/:userId/recommendedMerchants', function(req, res, next) {
