@@ -10,7 +10,8 @@ var connection = mongoose.createConnection(Config.get("Db_CONNECTION_STRING"));
 connection.on('error', console.error.bind(console,'connection error:'));
 connection.once('open', function () { console.info('connected to database') });
 var db = {
-	User: connection.model('User', models.User, 'users')
+	User: connection.model('User', models.User, 'users'),
+	Media: connection.model('Media', models.Media, 'medias')
 }
 setInterval(function(){
 	console.log('starting new run of updating unregistered brands posts');
@@ -24,7 +25,56 @@ setInterval(function(){
 	]})
 	.exec(function(err, users) {
 		users.forEach(function(user){
-			console.log(user);
+			db.Media.find({owner : user})
+						.sort({'created': 'desc'})
+						.limit(1)
+						.exec(function(err, medias) {
+							if(!err){
+								var lastId = medias[0].instaId;
+								// GET A RANOM TOKEN
+								var filter = {
+									$or:[
+										{ $and:[{merchantToken: {$exists:true}}, {merchantToken: {$ne:null}}, {merchantToken: {$ne:""}}] },
+										{ $and:[{buyerToken: {$exists:true}}, {buyerToken: {$ne:null}}, {buyerToken: {$ne:""}}] }
+									]
+								}
+								var fields = {merchantToken:1, buyerToken:1};
+								var options = { limit: 1 }
+								db.User.findRandom(filter, fields, options, function (err, userWithToken) {
+									userWithToken = userWithToken[0];
+									if(!err && userWithToken){
+										var token;
+										if(userWithToken.buyerToken){
+											token = userWithToken.buyerToken;
+										} else {
+											token = userWithToken.merchantToken;
+										}
+										instagram.use({ access_token: token });
+										instagram.user_media_recent(user.instaId, { min_id: lastId }, function(err, medias, pagination, remaining, limit) {
+											medias.forEach(function(media){
+												var newMedia = {
+													caption: media.caption ? media.caption.text : null,
+													instaId: media.id,
+													owner: user,
+													videos: media.videos ? media.videos : null,
+													images: media.images ? media.images : null,
+													link : media.link,
+													type: media.type
+												};
+								  			    db.Media.findOrCreate({instaId: media.id}, newMedia, function(err, toBeSavedMedia) {
+								  			    	if(!err){
+								  			    		toBeSavedMedia.save();
+								  			    		console.log("Added new media");
+								  			    		console.log(toBeSavedMedia);
+								  			    	}
+												});
+											});
+										});
+									}
+								});
+							}
+						});
+
 		});
 	});
 }, Config.get("GET_UNREGISTERED_MERCHANTS_POSTS_RUN_INTERVAL_SECONDS")*1000);
