@@ -172,6 +172,8 @@ router.get('/:userId/postedMedias', function(req, res, next) {
 	req.db.Media.find({owner : req.params.userId, created: createdDateQuery})
 				.sort({'created': 'desc'})
 				.limit(count)
+				// TODO:  remove sensative stuff from user
+				.populate({ path: 'owner' })
 				.exec(function(err, medias) {
 					if(!err){
 						res.json({
