@@ -191,6 +191,10 @@ var User = new Schema({
     type: Boolean,
     default: false
   },
+  isAdmin : {
+    type: Boolean,
+    default: false
+  },
   merchantRegisterationIds:{
     androidIds : [String],
     iosIds: [String]

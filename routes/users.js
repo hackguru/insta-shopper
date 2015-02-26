@@ -169,7 +169,27 @@ router.get('/:userId/postedMedias', function(req, res, next) {
 		count = count || 30;
 		createdDateQuery['$lte'] = Date.now();
 	}
-	req.db.Media.find({owner : req.params.userId, created: createdDateQuery})
+
+	var findQuery = {};
+
+	if (req.user.isAdmin) {
+		findQuery["$or"]:[
+			{ $and:[
+			 		{$or:[ { type: "merchant" }, { type: "both" } ]},
+					{$or:[{merchantToken: {$exists:false}}, {merchantToken: null}, {merchantToken: ""}]},
+					{username: {$exists:true}},
+					{username: {$ne:null}},
+					{username: {$ne:""}},
+					{created: createdDateQuery}
+			]},
+			{ $and:[{owner: req.params.userId}, {created: createdDateQuery}] }
+		];
+	} else {
+		findQuery.owner = req.params.userId;
+		findQuery.created = createdDateQuery;
+	}
+
+	req.db.Media.find(findQuery)
 				.sort({'created': 'desc'})
 				.limit(count)
 				// TODO:  remove sensative stuff from user
