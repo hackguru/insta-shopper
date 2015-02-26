@@ -284,7 +284,6 @@ router.post('/newUnregisteredMerchant/:username', function(req, res, next) {
 						type: "merchant"
 					};
 					req.db.User.findOrCreate({instaId: userFromInsta.id}, newUser, function(err, newUserAfterCreate) {
-						debugger;
 						newUserAfterCreate.bio = userFromInsta.bio;
 						newUserAfterCreate.fullName = userFromInsta.full_name;
 						newUserAfterCreate.profilePicture = userFromInsta.profile_picture;
@@ -293,6 +292,9 @@ router.post('/newUnregisteredMerchant/:username', function(req, res, next) {
 						newUserAfterCreate.save();
 						res.json(newUserAfterCreate);
 					});
+ 			 	} else {
+					console.log(err);
+					res.status(400).json({error:"couldn't connect to instagram"});
  			 	}
 		 	});
 		} else {
