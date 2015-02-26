@@ -31,6 +31,7 @@ setInterval(function(){
 						.exec(function(err, medias) {
 							if(!err){
 								var lastId = medias[0] ? medias[0].instaId : undefined;
+								debugger;
 								// GET A RANOM TOKEN
 								var filter = {
 									$or:[
