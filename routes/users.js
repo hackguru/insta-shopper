@@ -272,6 +272,7 @@ router.post('/newUnregisteredMerchant/:username', function(req, res, next) {
 	var options = { limit: 1 }
 	req.db.User.findRandom(filter, fields, options, function (err, userWithToken) {
 		debugger;
+		userWithToken = userWithToken[0];
 		if(!err && userWithToken){
 			var token;
 			if(userWithToken.buyerToken){
