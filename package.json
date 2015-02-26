@@ -24,6 +24,7 @@
     "aws-sdk": "*",
     "apn" : "*",
     "mongoose-deep-populate" : "*",
-    "mongoose-random" : "*"
+    "mongoose-random" : "*",
+    "nodemailer" : "*"
   }
 }

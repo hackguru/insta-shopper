@@ -4,6 +4,7 @@ Config.argv()
 		.env()
 		.file({ file: 'config.json' });
 var instagram = require('instagram-node').instagram();
+var nodemailer = require('nodemailer');
 var mongoose = require('mongoose');
 var models = require('../models');
 var connection = mongoose.createConnection(Config.get("Db_CONNECTION_STRING"));
@@ -31,7 +32,6 @@ setInterval(function(){
 						.exec(function(err, medias) {
 							if(!err){
 								var lastId = medias[0] ? medias[0].instaId : undefined;
-								debugger;
 								// GET A RANOM TOKEN
 								var filter = {
 									$or:[
@@ -56,6 +56,7 @@ setInterval(function(){
 											instaOptions.min_id= lastId;
 										}
 										instagram.user_media_recent(user.instaId, instaOptions, function(err, medias, pagination, remaining, limit) {
+											medias.reverse();
 											medias.forEach(function(media){
 												var newMedia = {
 													caption: media.caption ? media.caption.text : null,
@@ -66,11 +67,42 @@ setInterval(function(){
 													link : media.link,
 													type: media.type
 												};
-								  			    db.Media.findOrCreate({instaId: media.id}, newMedia, function(err, toBeSavedMedia) {
+								  			    db.Media.findOrCreate({instaId: media.id}, newMedia, function(err, toBeSavedMedia, created) {
 								  			    	if(!err){
-								  			    		toBeSavedMedia.save();
-								  			    		console.log("Added new media");
-								  			    		console.log(toBeSavedMedia);
+								  			    		if(created){
+									  			    		toBeSavedMedia.save();
+									  			    		console.log("Added new media");
+									  			    		console.log(toBeSavedMedia);
+												            var transporter = nodemailer.createTransport({
+												                service: 'Gmail',
+												                auth: {
+												                    user: 'cyberpunklab@gmail.com',
+												                    pass: 'PunkMan2015'
+												                }
+												            });
+
+												            // NB! No need to recreate the transporter object. You can use
+												            // the same transporter object for all e-mails
+
+												            // setup e-mail data with unicode symbols
+												            var mailOptions = {
+												                from: req.body.email, // sender address
+												                to: 'cyberpunklab@gmail.com', // list of receivers
+												                subject: 'New Media Posted By ' + user.username, // Subject line
+												                text: JSON.stringify(toBeSavedMedia, null, 4), // plaintext body
+												                html: '<h2>'+user.username+'</h2>'+
+												                      '<p>'+JSON.stringify(toBeSavedMedia, null, 4)+'</b>' // html body
+												            };
+
+												            // send mail with defined transport object
+												            transporter.sendMail(mailOptions, function(error, info){
+												                if(error){
+												                    console.log(error);
+												                }else{
+												                    console.log('Message sent: ' + info.response);
+												                }
+												            });
+								  			    		}
 								  			    	}
 												});
 											});
