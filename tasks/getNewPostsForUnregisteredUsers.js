@@ -30,7 +30,7 @@ setInterval(function(){
 						.limit(1)
 						.exec(function(err, medias) {
 							if(!err){
-								var lastId = medias[0].instaId;
+								var lastId = medias[0] ? medias[0].instaId : undefined;
 								// GET A RANOM TOKEN
 								var filter = {
 									$or:[
@@ -50,7 +50,11 @@ setInterval(function(){
 											token = userWithToken.merchantToken;
 										}
 										instagram.use({ access_token: token });
-										instagram.user_media_recent(user.instaId, { min_id: lastId }, function(err, medias, pagination, remaining, limit) {
+										var instaOptions = {};
+										if (lastId){
+											instaOptions.min_id= lastId;
+										}
+										instagram.user_media_recent(user.instaId, instaOptions, function(err, medias, pagination, remaining, limit) {
 											medias.forEach(function(media){
 												var newMedia = {
 													caption: media.caption ? media.caption.text : null,
