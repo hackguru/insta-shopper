@@ -268,7 +268,7 @@ router.post('/newUnregisteredMerchant/:username', function(req, res, next) {
 			{ $and:[{buyerToken: {$exists:true}}, {buyerToken: {$ne:null}}, {buyerToken: {$ne:""}}] }
 		]
 	}
-	var fields = 'merchantToken buyerToken';
+	var fields = {merchantToken:1, buyerToken:1};
 	var options = { limit: 1 }
 	req.db.User.findRandom(filter, fields, options, function (err, userWithToken) {
 		debugger;
