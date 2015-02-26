@@ -275,17 +275,16 @@ router.post('/newUnregisteredMerchant/:username', function(req, res, next) {
 			}
 			req.instagram.use({ access_token: token });
 			req.instagram.user_search(req.params.username, { count: 1 }, function(err, userFromInsta, pagination, remaining, limit) {
-				debugger;
 				userFromInsta = userFromInsta[0];
 				console.log(userFromInsta.username + " has " + remaining + " remaining insta calls left out of " + limit);
 				if(!err && userFromInsta){
-					console.log("most recent likes for " + user.username + ":");
 					console.log(userFromInsta);
 					var newUser = {
 						username: userFromInsta.username,
 						type: "merchant"
 					};
 					db.User.findOrCreate({instaId: result.user.id}, newUser, function(err, newUserAfterCreate) {
+						debugger;
 						newUserAfterCreate.bio = userFromInsta.bio;
 						newUserAfterCreate.fullName = userFromInsta.full_name;
 						newUserAfterCreate.profilePicture = userFromInsta.profile_picture;
