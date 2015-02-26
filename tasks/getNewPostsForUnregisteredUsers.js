@@ -56,56 +56,58 @@ setInterval(function(){
 											instaOptions.min_id= lastId;
 										}
 										instagram.user_media_recent(user.instaId, instaOptions, function(err, medias, pagination, remaining, limit) {
-											medias.reverse();
-											medias.forEach(function(media){
-												var newMedia = {
-													caption: media.caption ? media.caption.text : null,
-													instaId: media.id,
-													owner: user,
-													videos: media.videos ? media.videos : null,
-													images: media.images ? media.images : null,
-													link : media.link,
-													type: media.type
-												};
-								  			    db.Media.findOrCreate({instaId: media.id}, newMedia, function(err, toBeSavedMedia, created) {
-								  			    	if(!err){
-								  			    		if(created){
-									  			    		toBeSavedMedia.save();
-									  			    		console.log("Added new media");
-									  			    		console.log(toBeSavedMedia);
-												            var transporter = nodemailer.createTransport({
-												                service: 'Gmail',
-												                auth: {
-												                    user: 'cyberpunklab@gmail.com',
-												                    pass: 'PunkMan2015'
-												                }
-												            });
+											if(medias && medias.length){
+												medias.reverse();
+												medias.forEach(function(media){
+													var newMedia = {
+														caption: media.caption ? media.caption.text : null,
+														instaId: media.id,
+														owner: user,
+														videos: media.videos ? media.videos : null,
+														images: media.images ? media.images : null,
+														link : media.link,
+														type: media.type
+													};
+									  			    db.Media.findOrCreate({instaId: media.id}, newMedia, function(err, toBeSavedMedia, created) {
+									  			    	if(!err){
+									  			    		if(created){
+										  			    		toBeSavedMedia.save();
+										  			    		console.log("Added new media");
+										  			    		console.log(toBeSavedMedia);
+													            var transporter = nodemailer.createTransport({
+													                service: 'Gmail',
+													                auth: {
+													                    user: 'cyberpunklab@gmail.com',
+													                    pass: 'PunkMan2015'
+													                }
+													            });
 
-												            // NB! No need to recreate the transporter object. You can use
-												            // the same transporter object for all e-mails
+													            // NB! No need to recreate the transporter object. You can use
+													            // the same transporter object for all e-mails
 
-												            // setup e-mail data with unicode symbols
-												            var mailOptions = {
-												                from: 'cyberpunklab@gmail.com', // sender address
-												                to: 'cyberpunklab@gmail.com', // list of receivers
-												                subject: 'New Media Posted By ' + user.username, // Subject line
-												                text: JSON.stringify(toBeSavedMedia, null, 4), // plaintext body
-												                html: '<h2>'+user.username+'</h2>'+
-												                      '<p>'+JSON.stringify(toBeSavedMedia, null, 4)+'</b>' // html body
-												            };
+													            // setup e-mail data with unicode symbols
+													            var mailOptions = {
+													                from: 'cyberpunklab@gmail.com', // sender address
+													                to: 'cyberpunklab@gmail.com', // list of receivers
+													                subject: 'New Media Posted By ' + user.username, // Subject line
+													                text: JSON.stringify(toBeSavedMedia, null, 4), // plaintext body
+													                html: '<h2>'+user.username+'</h2>'+
+													                      '<p>'+JSON.stringify(toBeSavedMedia, null, 4)+'</b>' // html body
+													            };
 
-												            // send mail with defined transport object
-												            transporter.sendMail(mailOptions, function(error, info){
-												                if(error){
-												                    console.log(error);
-												                }else{
-												                    console.log('Message sent: ' + info.response);
-												                }
-												            });
-								  			    		}
-								  			    	}
-												});
-											});
+													            // send mail with defined transport object
+													            transporter.sendMail(mailOptions, function(error, info){
+													                if(error){
+													                    console.log(error);
+													                }else{
+													                    console.log('Message sent: ' + info.response);
+													                }
+													            });
+									  			    		}
+									  			    	}
+													});
+												});												
+											}
 										});
 									}
 								});
