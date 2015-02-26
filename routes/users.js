@@ -228,7 +228,7 @@ router.get('/merchant/:userId', function(req, res, next) {
 			res.status(404).json({ error: 'could not find any records' });
 		}
 	});
-})
+});
 
 router.post('/updateRegId', function(req, res, next) {
 	var newRegId = req.body.newRegId;
@@ -252,5 +252,60 @@ router.post('/updateRegId', function(req, res, next) {
 	req.user.save();					
 	res.json({ status : 200 });
 });
+
+router.post('/newUnregisteredMerchant/:username', function(req, res, next) {
+	//TODO: seccure this call
+	debugger;
+
+	req.db.User.syncRandom(function (err, result) {
+		debugger;
+	  console.log(result.updated);
+	});
+	//Gettingn a random access token
+	var filter = {
+		$or:[
+			{ $and:[{merchantToken: {$exists:true}}, {merchantToken: {$ne:null}}, {merchantToken: {$ne:""}}] },
+			{ $and:[{buyerToken: {$exists:true}}, {buyerToken: {$ne:null}}, {buyerToken: {$ne:""}}] }
+		]
+	}
+	var fields = 'merchantToken buyerToken';
+	var options = { limit: 1 }
+	req.db.User.findRandom(filter, fields, options, function (err, userWithToken) {
+		debugger;
+		if(!err && userWithToken){
+			var token;
+			if(userWithToken.buyerToken){
+				token = userWithToken.buyerToken;
+			} else {
+				token = userWithToken.merchantToken;
+			}
+			req.instagram.use({ access_token: token });
+			req.instagram.user_search(req.params.username, { count: 1 }, function(err, userFromInsta, pagination, remaining, limit) {
+				console.log(user.username + " has " + remaining + " remaining insta calls left out of " + limit);
+				if(!err && userFromInsta){
+					console.log("most recent likes for " + user.username + ":");
+					console.log(userFromInsta);
+					var newUser = {
+						username: userFromInsta.username,
+						type: "merchant"
+					};
+					db.User.findOrCreate({instaId: result.user.id}, newUser, function(err, newUserAfterCreate) {
+						newUserAfterCreate.bio = userFromInsta.bio;
+						newUserAfterCreate.fullName = userFromInsta.full_name;
+						newUserAfterCreate.profilePicture = userFromInsta.profile_picture;
+						newUserAfterCreate.website = userFromInsta.website;
+						newUserAfterCreate.type = newUserAfterCreate.type === "merchant" ? "merchant" : "both";
+						newUserAfterCreate.save();
+						res.json(newUserAfterCreate);
+					});
+ 			 	}
+		 	});
+		} else {
+			console.log(err);
+			res.status(400).json({error:"could find token to run insta call"});
+		}
+	});
+});
+
 
 module.exports = router;

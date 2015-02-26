@@ -4,6 +4,7 @@ var userTypes = 'buyer merchant both'.split(' ');
 var mediaTypes =  'image video'.split(' ' );
 var findOrCreate = require('mongoose-findorcreate');
 var deepPopulate = require('mongoose-deep-populate');
+var random = require('mongoose-random');
 
 var autoUpdateTimeStamp = function (next) {
   now = new Date();
@@ -203,6 +204,7 @@ var User = new Schema({
 User.pre('save', autoUpdateTimeStamp);
 
 User.plugin(findOrCreate);
+User.plugin(random, { path: 'r' });
 
 exports.Media = Media;
 exports.User = User;

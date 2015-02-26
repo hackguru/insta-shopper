@@ -23,6 +23,7 @@
     "framer": "*",
     "aws-sdk": "*",
     "apn" : "*",
-    "mongoose-deep-populate" : "*"
+    "mongoose-deep-populate" : "*",
+    "mongoose-random" : "*"
   }
 }
