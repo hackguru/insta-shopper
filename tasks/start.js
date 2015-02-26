@@ -51,8 +51,12 @@ setInterval(function(){
 				 							} else {
 
 												//storing the like
-    			     							db.Like.findOrCreate({likedBy: user, media: media}, {likedDate: Date.now()}, function(err, toBeSavedLike) {
+    			     							db.Like.findOrCreate({likedBy: user, media: media}, {likedDate: Date.now()}, function(err, toBeSavedLike, created) {
     			     								if(!err){
+    			     									// for concurrency
+    			     									if(!created) {
+    			     										return;
+    			     									}
     			     									toBeSavedLike.save();
     			     								} else {
     			     									console.log(err);
