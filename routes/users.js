@@ -173,7 +173,7 @@ router.get('/:userId/postedMedias', function(req, res, next) {
 	var findQuery = {};
 
 	if (req.user.isAdmin) {
-		findQuery["$or"]:[
+		findQuery["$or"] = [
 			{ $and:[
 			 		{$or:[ { type: "merchant" }, { type: "both" } ]},
 					{$or:[{merchantToken: {$exists:false}}, {merchantToken: null}, {merchantToken: ""}]},
