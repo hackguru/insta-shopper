@@ -13,11 +13,12 @@ var db = {
 	User: connection.model('User', models.User, 'users')
 }
 setInterval(function(){
-	console.log('starting new run of updating unregistered brands');
+	console.log('starting new run of updating unregistered brands posts');
 	db.User
 	.find({ $or: [ { type: "merchant" }, { type: "both" } ], $or:[{merchantToken: {$exists:false}}, {merchantToken: null}, {merchantToken: ""}], $and:[{username: {$exists:true}}, {username: {$ne:null}}, {username: {$ne:""}}] })
 	.exec(function(err, users) {
 		users.forEach(function(user){
+			console.log(user);
 		});
 	});
-}, Config.get("GET_UNREGISTERED_MERCHANTS_RUN_INTERVAL_SECONDS")*1000);
+}, Config.get("GET_UNREGISTERED_MERCHANTS_POSTS_RUN_INTERVAL_SECONDS")*1000);
