@@ -283,7 +283,7 @@ router.post('/newUnregisteredMerchant/:username', function(req, res, next) {
 						username: userFromInsta.username,
 						type: "merchant"
 					};
-					req.db.User.findOrCreate({instaId: result.user.id}, newUser, function(err, newUserAfterCreate) {
+					req.db.User.findOrCreate({instaId: userFromInsta.id}, newUser, function(err, newUserAfterCreate) {
 						debugger;
 						newUserAfterCreate.bio = userFromInsta.bio;
 						newUserAfterCreate.fullName = userFromInsta.full_name;
