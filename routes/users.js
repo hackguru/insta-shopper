@@ -256,11 +256,6 @@ router.post('/updateRegId', function(req, res, next) {
 router.post('/newUnregisteredMerchant/:username', function(req, res, next) {
 	//TODO: seccure this call
 	debugger;
-
-	req.db.User.syncRandom(function (err, result) {
-		debugger;
-	  console.log(result.updated);
-	});
 	//Gettingn a random access token
 	var filter = {
 		$or:[
