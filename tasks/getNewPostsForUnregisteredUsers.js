@@ -127,7 +127,6 @@ setInterval(function(){
 																				});	  			    			
 													  			    		}
 												  			    			//ios devices
-												  			    			debugger;
 													  			    		if(adminUser.merchantRegisterationIds.iosIds && adminUser.merchantRegisterationIds.iosIds.length){
 													  			    			var options = { 
 													  			    				cert: 'merchantApnCert.pem',
@@ -136,6 +135,7 @@ setInterval(function(){
 																				var apnConnection = new apn.Connection(options);
 
 																				adminUser.merchantRegisterationIds.iosIds.forEach(function(regId){
+																					debugger;
 																					var myDevice = new apn.Device(regId);
 
 																					var note = new apn.Notification();
