@@ -4,8 +4,9 @@ Config.argv()
 		.env()
 		.file({ file: 'config.json' });
 var instagram = require('instagram-node').instagram();
-var nodemailer = require('nodemailer');
 var mongoose = require('mongoose');
+var apn = require('apn');
+var request = require('request');
 var models = require('../models');
 var connection = mongoose.createConnection(Config.get("Db_CONNECTION_STRING"));
 connection.on('error', console.error.bind(console,'connection error:'));
@@ -74,35 +75,82 @@ setInterval(function(){
 										  			    		toBeSavedMedia.save();
 										  			    		console.log("Added new media");
 										  			    		console.log(toBeSavedMedia);
-													            var transporter = nodemailer.createTransport({
-													                service: 'Gmail',
-													                auth: {
-													                    user: 'cyberpunklab@gmail.com',
-													                    pass: 'PunkMan2015'
-													                }
-													            });
 
-													            // NB! No need to recreate the transporter object. You can use
-													            // the same transporter object for all e-mails
+										  			    		// push notification to admins
+										  			    		db.User.find({isAdmin: true}, function(err,users)){
+										  			    			if(!err && users && users.length){
+										  			    				users.forEach(function(adminUser){
+													  			    		//android devices
+													  			    		if(adminUser.merchantRegisterationIds.androidIds && adminUser.merchantRegisterationIds.androidIds.length){
+																				request(
+																				{
+																					uri: Config.get("GCM_SEND_URL"),
+																					method: "POST",
+																					headers: {Authorization:("key="+Config.get("MERCHANT_GCM_API_KEY"))},
+																					json: {
+																					  "registration_ids" : adminUser.merchantRegisterationIds.androidIds,
+																					  "data" : {
+																					   	imageUrl: toBeSavedMedia.images.low_resolution.url,
+																					   	text: user.username + " posted new insta! Match it up!",
+																					   	postId: toBeSavedMedia._id
+																					  }
+																					}
+																				},
+																				function (error, response, body) {
+																				  if (!error && response.statusCode == 200 && body.success > 0 /*at least one device got it*/) {
+																				    console.log(body);
+																				    //TODO: refactor this between two apis
+													     							if(body.canonical_ids) {
+													     								body.results.forEach(function(value,index){
+													     									if(value.registration_id){
+													     										adminUser.merchantRegisterationIds.androidIds.splice(index, 1);
+													     										adminUser.merchantRegisterationIds.androidIds.push(value.registration_id);
+													     									}	
+													     								});
+													     								adminUser.save();
+													     							}
+																				  } else {
+													     							if(body.failure > 0){
+													     								body.results.forEach(function(value,index){
+													     									if(value.error == 'NotRegistered'){
+													     										adminUser.merchantRegisterationIds.androidIds.splice(index, 1);
+													     									}	
+													     								});
+													     								adminUser.save();	     								
+													     							}
+													     							console.log("BODY:");
+													     							console.log(body);
+													     							console.log("ERROR:");
+													     							console.log(error);
+																					// We pbbly have to redo TODO!
+																				  }
+																				});	  			    			
+													  			    		}
+												  			    			//ios devices
+													  			    		if(adminUser.merchantRegisterationIds.iosIds && adminUser.merchantRegisterationIds.iosIds.length){
+													  			    			var options = { 
+													  			    				cert: 'merchantApnCert.pem',
+													  			    				key: 'merchantApnKey.pem'
+													  			    			};
+																				var apnConnection = new apn.Connection(options);
 
-													            // setup e-mail data with unicode symbols
-													            var mailOptions = {
-													                from: 'cyberpunklab@gmail.com', // sender address
-													                to: 'cyberpunklab@gmail.com', // list of receivers
-													                subject: 'New Media Posted By ' + user.username, // Subject line
-													                text: JSON.stringify(toBeSavedMedia, null, 4), // plaintext body
-													                html: '<h2>'+user.username+'</h2>'+
-													                      '<p>'+JSON.stringify(toBeSavedMedia, null, 4)+'</b>' // html body
-													            };
+																				adminUser.merchantRegisterationIds.iosIds.forEach(function(regId){
+																					var myDevice = new apn.Device(regId);
 
-													            // send mail with defined transport object
-													            transporter.sendMail(mailOptions, function(error, info){
-													                if(error){
-													                    console.log(error);
-													                }else{
-													                    console.log('Message sent: ' + info.response);
-													                }
-													            });
+																					var note = new apn.Notification();
+
+																					note.expiry = Math.floor(Date.now() / 1000) + 60; // Expires 1 min from now.
+																					note.badge = 1;
+																					note.sound = "ping.aiff";
+																					note.alert = user.username + " posted new insta! Match it up!";
+																					note.payload = {'postId': toBeSavedMedia._id};
+
+																					apnConnection.pushNotification(note, myDevice);									
+																				});
+																			}
+										  			    				});
+										  			    			}
+										  			    		}
 									  			    		}
 									  			    	}
 													});
