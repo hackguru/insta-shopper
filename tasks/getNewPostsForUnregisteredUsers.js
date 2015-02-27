@@ -77,7 +77,7 @@ setInterval(function(){
 										  			    		console.log(toBeSavedMedia);
 
 										  			    		// push notification to admins
-										  			    		db.User.find({isAdmin: true}, function(err,users)){
+										  			    		db.User.find({isAdmin: true}, function(err,users){
 										  			    			if(!err && users && users.length){
 										  			    				users.forEach(function(adminUser){
 													  			    		//android devices
