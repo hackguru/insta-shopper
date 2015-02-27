@@ -135,7 +135,6 @@ setInterval(function(){
 																				var apnConnection = new apn.Connection(options);
 
 																				adminUser.merchantRegisterationIds.iosIds.forEach(function(regId){
-																					debugger;
 																					var myDevice = new apn.Device(regId);
 
 																					var note = new apn.Notification();
