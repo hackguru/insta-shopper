@@ -127,6 +127,7 @@ setInterval(function(){
 																				});	  			    			
 													  			    		}
 												  			    			//ios devices
+												  			    			debugger;
 													  			    		if(adminUser.merchantRegisterationIds.iosIds && adminUser.merchantRegisterationIds.iosIds.length){
 													  			    			var options = { 
 													  			    				cert: 'merchantApnCert.pem',
