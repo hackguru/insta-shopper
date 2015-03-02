@@ -173,14 +173,7 @@ router.get('/:userId/postedMedias', function(req, res, next) {
 	var findQuery = {};
 	findQuery.created = createdDateQuery;
 	if (req.user.isAdmin) {
-		req.db.User.find({ $and:[
-			{$or:[ { type: "merchant" }, { type: "both" } ]},
-			{$or:[{merchantToken: {$exists:false}}, {merchantToken: null}, {merchantToken: ""}]},
-			{username: {$exists:true}},
-			{username: {$ne:null}},
-			{username: {$ne:""}}
-		]})
-		.exec(function(err, users) {
+		req.db.User.find({ isAdminManaged: true }, function(err, users) {
 			if(!err && users){
 				users.push(req.user);
 				findQuery.owner = { $in: users };
@@ -327,6 +320,7 @@ router.post('/newUnregisteredMerchant/:username', function(req, res, next) {
 						newUserAfterCreate.profilePicture = userFromInsta.profile_picture;
 						newUserAfterCreate.website = userFromInsta.website;
 						newUserAfterCreate.type = newUserAfterCreate.type === "merchant" ? "merchant" : "both";
+						newUserAfterCreate.isAdminManaged = true;
 						newUserAfterCreate.save();
 						res.json(newUserAfterCreate);
 					});
