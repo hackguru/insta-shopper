@@ -147,6 +147,9 @@ setInterval(function(){
 						console.log(err);
      			 			//TODO
  			 		}
+ 			 	} else {
+ 			 		console.log('err from instagram:');
+ 			 		console.log(err);
  			 	}
 		 	);
 		});
