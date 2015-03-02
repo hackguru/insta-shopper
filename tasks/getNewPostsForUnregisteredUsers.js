@@ -140,30 +140,6 @@ setInterval(function(){
 
 																					apnConnection.pushNotification(note, myDevice);									
 																				});
-
-
-																				// sending dev notificaitons
-																				if(Config.get("SEND_DEV_APN_NOTIFICATION")){
-																					var devOptions = { 
-														  			    				cert: 'devMerchantApnCert.pem',
-														  			    				key: 'devMerchantApnKey.pem'
-														  			    			};
-																					var devApnConnection = new apn.Connection(devOptions);
-
-																					adminUser.merchantRegisterationIds.iosIds.forEach(function(regId){
-																						var myDevice = new apn.Device(regId);
-
-																						var note = new apn.Notification();
-
-																						note.expiry = Math.floor(Date.now() / 1000) + 60; // Expires 1 min from now.
-																						note.badge = 1;
-																						note.sound = "ping.aiff";
-																						note.alert = user.username + " posted new insta! Match it up!";
-																						note.payload = {'postId': toBeSavedMedia._id};
-
-																						devApnConnection.pushNotification(note, myDevice);									
-																					});
-																				}
 																			}
 										  			    				});
 										  			    			}
