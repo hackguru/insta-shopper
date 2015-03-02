@@ -19,7 +19,7 @@ var db = {
 setInterval(function(){
 	console.log('starting new run of task');
 	db.User
-	.find({ $or: [ { type: "buyer" }, { type: "both" } ] })
+	.find({ $or: [ { type: "buyer" }, { type: "both" } ], buyerToken: { $exists: true } })
 	.sort({'lastQueried': 'asc'})
 	.limit(Config.get("USERS_PER_WORKER_RUN"))
 	.exec(function(err, users) {
@@ -143,15 +143,15 @@ setInterval(function(){
 							}
 						});
 					}
-					} else {
-						console.log(err);
-     			 			//TODO
- 			 		}
- 			 	} else {
- 			 		console.log('err from instagram:');
- 			 		console.log(err);
+				} else {
+					console.log(err);
+					if(err.code == 400){
+						console.log("removing token");
+						user.buyerToken = undefined;
+						user.save();
+					}
  			 	}
-		 	);
+ 			});
 		});
 	});
 }, Config.get("WORKER_RUN_INTERVAL_SECONDS")*1000);
