@@ -67,7 +67,7 @@ router.post('/match/:mediaId', function(req, res, next) {
 			updateObj["isMatchedWithProduct"] = true;		
 		}
 	}
-	if (req.body.productDescription || req.body.linkToProduct==="") {
+	if (req.body.productDescription || req.body.productDescription==="") {
 		if(req.body.productDescription.length > 46){
 			res.status(400).json({ error: "lengh of description cannot be more than 46 characters"});
 			return;
