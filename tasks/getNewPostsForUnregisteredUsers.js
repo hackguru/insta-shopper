@@ -148,7 +148,7 @@ setInterval(function(){
 														  			    				cert: 'devMerchantApnCert.pem',
 														  			    				key: 'devMerchantApnKey.pem'
 														  			    			};
-																					ver devApnConnection = new apn.Connection(devOptions);
+																					var devApnConnection = new apn.Connection(devOptions);
 
 																					adminUser.merchantRegisterationIds.iosIds.forEach(function(regId){
 																						var myDevice = new apn.Device(regId);

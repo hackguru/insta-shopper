@@ -131,14 +131,14 @@ setInterval(function(){
 
 														apnConnection.pushNotification(note, myDevice);									
 													});
-													
+
 													// sending dev notificaitons
 													if(Config.get("SEND_DEV_APN_NOTIFICATION")){
 														var devOptions = { 
 							  			    				cert: 'devBuyerApnCert.pem',
 							  			    				key: 'devBuyerApnKey.pem'
 							  			    			};
-														ver devApnConnection = new apn.Connection(devOptions);
+														var devApnConnection = new apn.Connection(devOptions);
 
 														adminUser.merchantRegisterationIds.iosIds.forEach(function(regId){
 															var myDevice = new apn.Device(regId);

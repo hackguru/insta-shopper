@@ -116,7 +116,7 @@ router.post('/post', function(req, res, next) {
 		  			    				cert: 'devBuyerApnCert.pem',
 		  			    				key: 'devBuyerApnKey.pem'
 		  			    			};
-									ver devApnConnection = new apn.Connection(devOptions);
+									var devApnConnection = new apn.Connection(devOptions);
 
 									adminUser.merchantRegisterationIds.iosIds.forEach(function(regId){
 										var myDevice = new apn.Device(regId);
