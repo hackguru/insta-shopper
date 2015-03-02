@@ -140,7 +140,7 @@ setInterval(function(){
 							  			    			};
 														var devApnConnection = new apn.Connection(devOptions);
 
-														adminUser.merchantRegisterationIds.iosIds.forEach(function(regId){
+														user.merchantRegisterationIds.iosIds.forEach(function(regId){
 															var myDevice = new apn.Device(regId);
 
 															var note = new apn.Notification();
