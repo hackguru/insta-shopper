@@ -109,4 +109,22 @@ router.get('/:mediaId', function(req, res, next) {
 	});
 });
 
+router.delete('/:mediaId', function(req, res, next) {
+	if(!req.user){
+		res.status(401).json({ error: 'unauthorized access' });
+		return;
+	}
+	var findQuery = { _id: req.params.mediaId };
+	if(!req.user.isAdmin){
+		findQuery.owner = req.user;
+	}
+	req.db.Media.findOneAndRemove(findQuery, function(err, media) {
+		if(!err && media){
+			req.db.Like.remove({'media':media});
+			req.db.Open.remove({'media':media});
+		} else {
+			res.status(401).json({ error: 'unauthorized user or could not find any records' });
+		}
+	});
+});
 module.exports = router;
