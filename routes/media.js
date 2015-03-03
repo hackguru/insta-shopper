@@ -59,14 +59,6 @@ router.post('/match/:mediaId', function(req, res, next) {
 		return;
 	}
 	var updateObj = {};
-	if (req.body.linkToProduct || req.body.linkToProduct==="") {
-		updateObj["linkToProduct"] = req.body.linkToProduct;
-		if(req.body.linkToProduct===""){
-			updateObj["isMatchedWithProduct"] = false;
-		} else {
-			updateObj["isMatchedWithProduct"] = true;		
-		}
-	}
 	if (req.body.productDescription || req.body.productDescription==="") {
 		if(req.body.productDescription.length > 46){
 			res.status(400).json({ error: "lengh of description cannot be more than 46 characters"});
@@ -74,7 +66,15 @@ router.post('/match/:mediaId', function(req, res, next) {
 		}
 		updateObj["productDescription"] = req.body.productDescription;
 	}
-
+	if (req.body.linkToProduct || req.body.linkToProduct==="") {
+		updateObj["linkToProduct"] = req.body.linkToProduct;
+		if(req.body.linkToProduct===""){
+			updateObj["isMatchedWithProduct"] = false;
+			updateObj["productDescription"] = undefined;
+		} else {
+			updateObj["isMatchedWithProduct"] = true;		
+		}
+	}
 	var findQuery = { _id: req.params.mediaId };
 	if(!req.user.isAdmin){
 		findQuery.owner = req.user;
@@ -87,6 +87,29 @@ router.post('/match/:mediaId', function(req, res, next) {
 		res.end(JSON.stringify({ statusCode: 401 }));
 	  } else {
 		res.end(JSON.stringify({ statusCode: 200 }));
+		if(req.body.linkToProduct===""){
+			//Deleting image if it is unmatch
+			req.db.Media.findOne(findQuery, function(err, media){
+				var uri = url.parse(media.linkToProduct);
+
+				var params = {
+				  Bucket: uri.hostname.split(".")[0],
+				  Delete: {
+				    Objects: [
+				      {
+				        Key: uri.path.substr(1)
+				      }
+				    ]
+				  }
+				};
+
+				req.s3.deleteObjects(params, function(err, data) {
+				  if (err) console.log(err, err.stack); // an error occurred
+				});
+				media.linkToProduct = undefined;
+				media.save();
+			});
+		}
 	  }
 	});			
 });
