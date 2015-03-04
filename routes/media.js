@@ -89,7 +89,16 @@ router.post('/match/:mediaId', function(req, res, next) {
 		if(req.body.linkToProduct===""){
 			//Deleting image if it is unmatch
 			req.db.Media.findOne(findQuery, function(err, media){
-				var uri = url.parse(media.productLinkScreenshot);
+
+				var ssUrl = media.productLinkScreenshot;
+
+				media.linkToProduct = undefined;
+				media.productLinkScreenshot = undefined;
+				media.productDescription = undefined;
+				media.isMatchedWithProduct = false;
+				media.save();
+
+				var uri = url.parse(ssUrl);
 
 				var params = {
 				  Bucket: uri.hostname.split(".")[0],
@@ -105,12 +114,6 @@ router.post('/match/:mediaId', function(req, res, next) {
 				req.s3.deleteObjects(params, function(err, data) {
 				  if (err) console.log(err, err.stack); // an error occurred
 				});
-
-				media.linkToProduct = undefined;
-				media.productLinkScreenshot = undefined;
-				media.productDescription = undefined;
-				media.isMatchedWithProduct = false;
-				media.save();
 			});
 		}
 	  }
