@@ -145,22 +145,26 @@ router.delete('/:mediaId', function(req, res, next) {
 		if(!err && media){
 			req.db.Like.remove({'media':media});
 			req.db.Open.remove({'media':media});
-			var uri = url.parse(media.linkToProduct);
 
-			var params = {
-			  Bucket: uri.hostname.split(".")[0],
-			  Delete: {
-			    Objects: [
-			      {
-			        Key: uri.path.substr(1)
-			      }
-			    ]
-			  }
-			};
+			if(media.linkToProduct && media.linkToProduct != ""){
+				var uri = url.parse(media.linkToProduct);
 
-			req.s3.deleteObjects(params, function(err, data) {
-			  if (err) console.log(err, err.stack); // an error occurred
-			});			
+				var params = {
+				  Bucket: uri.hostname.split(".")[0],
+				  Delete: {
+				    Objects: [
+				      {
+				        Key: uri.path.substr(1)
+				      }
+				    ]
+				  }
+				};
+
+				req.s3.deleteObjects(params, function(err, data) {
+				  if (err) console.log(err, err.stack); // an error occurred
+				});				
+			}
+			
 			res.json({ 'status': 'ok' });
 		} else {
 			res.status(401).json({ error: 'unauthorized user or could not find any records' });
