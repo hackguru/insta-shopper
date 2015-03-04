@@ -90,7 +90,7 @@ router.post('/match/:mediaId', function(req, res, next) {
 		if(req.body.linkToProduct===""){
 			//Deleting image if it is unmatch
 			req.db.Media.findOne(findQuery, function(err, media){
-				var uri = url.parse(media.linkToProduct);
+				var uri = url.parse(media.productLinkScreenshot);
 
 				var params = {
 				  Bucket: uri.hostname.split(".")[0],
@@ -107,6 +107,7 @@ router.post('/match/:mediaId', function(req, res, next) {
 				  if (err) console.log(err, err.stack); // an error occurred
 				});
 				media.linkToProduct = undefined;
+				media.productLinkScreenshot = undefined;
 				media.save();
 			});
 		}
@@ -141,14 +142,13 @@ router.delete('/:mediaId', function(req, res, next) {
 	if(!req.user.isAdmin){
 		findQuery.owner = req.user;
 	}
-	req.db.Media.findOne(findQuery, function(err, media) {
+	req.db.Media.findOneAndRemove(findQuery, function(err, media) {
 		if(!err && media){
 			req.db.Like.remove({'media':media});
 			req.db.Open.remove({'media':media});
 
-			console.log(media.linkToProduct);
-			if(media.linkToProduct && media.linkToProduct != ""){
-				var uri = url.parse(media.linkToProduct);
+			if(media.productLinkScreenshot && media.productLinkScreenshot != ""){
+				var uri = url.parse(media.productLinkScreenshot);
 
 				var params = {
 				  Bucket: uri.hostname.split(".")[0],
@@ -165,8 +165,6 @@ router.delete('/:mediaId', function(req, res, next) {
 				  if (err) console.log(err, err.stack); // an error occurred
 				});				
 			}
-
-			media.remove();
 
 			res.json({ 'status': 'ok' });
 		} else {
