@@ -28,20 +28,22 @@ router.post('/matchScreenShot/:mediaId', function(req, res, next) {
 					//Deleting old image
 					var uri = url.parse(previousUrl);
 
-					var params = {
-					  Bucket: uri.hostname.split(".")[0],
-					  Delete: {
-					    Objects: [
-					      {
-					        Key: uri.path.substr(1)
-					      }
-					    ]
-					  }
-					};
+					if(uri){
+						var params = {
+						  Bucket: uri.hostname.split(".")[0],
+						  Delete: {
+						    Objects: [
+						      {
+						        Key: uri.path.substr(1)
+						      }
+						    ]
+						  }
+						};
 
-					req.s3.deleteObjects(params, function(err, data) {
-					  if (err) console.log(err, err.stack); // an error occurred
-					});					
+						req.s3.deleteObjects(params, function(err, data) {
+						  if (err) console.log(err, err.stack); // an error occurred
+						});				
+					}
 				}
 			  }
 			});			
@@ -100,20 +102,22 @@ router.post('/match/:mediaId', function(req, res, next) {
 
 				var uri = url.parse(ssUrl);
 
-				var params = {
-				  Bucket: uri.hostname.split(".")[0],
-				  Delete: {
-				    Objects: [
-				      {
-				        Key: uri.path.substr(1)
-				      }
-				    ]
-				  }
-				};
+				if(uri){
+					var params = {
+					  Bucket: uri.hostname.split(".")[0],
+					  Delete: {
+					    Objects: [
+					      {
+					        Key: uri.path.substr(1)
+					      }
+					    ]
+					  }
+					};
 
-				req.s3.deleteObjects(params, function(err, data) {
-				  if (err) console.log(err, err.stack); // an error occurred
-				});
+					req.s3.deleteObjects(params, function(err, data) {
+					  if (err) console.log(err, err.stack); // an error occurred
+					});
+				}
 			});
 		}
 	  }
@@ -155,20 +159,22 @@ router.delete('/:mediaId', function(req, res, next) {
 			if(media.productLinkScreenshot && media.productLinkScreenshot != ""){
 				var uri = url.parse(media.productLinkScreenshot);
 
-				var params = {
-				  Bucket: uri.hostname.split(".")[0],
-				  Delete: {
-				    Objects: [
-				      {
-				        Key: uri.path.substr(1)
-				      }
-				    ]
-				  }
-				};
+				if(uri){
+					var params = {
+					  Bucket: uri.hostname.split(".")[0],
+					  Delete: {
+					    Objects: [
+					      {
+					        Key: uri.path.substr(1)
+					      }
+					    ]
+					  }
+					};
 
-				req.s3.deleteObjects(params, function(err, data) {
-				  if (err) console.log(err, err.stack); // an error occurred
-				});				
+					req.s3.deleteObjects(params, function(err, data) {
+					  if (err) console.log(err, err.stack); // an error occurred
+					});					
+				}
 			}
 
 			res.json({ 'status': 'ok' });
