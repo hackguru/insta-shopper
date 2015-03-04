@@ -106,9 +106,9 @@ router.post('/match/:mediaId', function(req, res, next) {
 				  if (err) console.log(err, err.stack); // an error occurred
 				});
 
-				media.linkToProduct = null;
-				media.productLinkScreenshot = null;
-				media.productDescription = null;
+				media.linkToProduct = undefined;
+				media.productLinkScreenshot = undefined;
+				media.productDescription = undefined;
 				media.isMatchedWithProduct = false;
 				media.save();
 			});

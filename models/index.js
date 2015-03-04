@@ -122,9 +122,18 @@ var Media = new Schema ({
     default: mediaTypes[0]
   },
   isMatchedWithProduct : Boolean,
-  linkToProduct: String,
-  productLinkScreenshot: String,
-  productDescription: String
+  linkToProduct: {
+    type:String,
+    required:false
+  },
+  productLinkScreenshot: {
+    type:String,
+    required:false
+  },
+  productDescription: {
+    type:String,
+    required:false
+  }
 });
 
 Media.pre('save', autoUpdateTimeStamp);
