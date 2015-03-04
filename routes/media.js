@@ -71,6 +71,7 @@ router.post('/match/:mediaId', function(req, res, next) {
 		if(req.body.linkToProduct===""){
 			updateObj["isMatchedWithProduct"] = false;
 			updateObj["productDescription"] = undefined;
+			updateObj["linkToProduct"] = undefined;
 		} else {
 			updateObj["isMatchedWithProduct"] = true;		
 		}
@@ -106,9 +107,8 @@ router.post('/match/:mediaId', function(req, res, next) {
 				req.s3.deleteObjects(params, function(err, data) {
 				  if (err) console.log(err, err.stack); // an error occurred
 				});
-				media.linkToProduct = undefined;
-				media.productLinkScreenshot = undefined;
-				media.save();
+
+				req.db.Media.update(findQuery, { $unset: {linkToProduct:"", productLinkScreenshot:"", productDescription: ""}});
 			});
 		}
 	  }
