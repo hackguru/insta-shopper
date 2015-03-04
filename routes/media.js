@@ -106,7 +106,11 @@ router.post('/match/:mediaId', function(req, res, next) {
 				  if (err) console.log(err, err.stack); // an error occurred
 				});
 
-				req.db.Media.update(findQuery, { $unset: {linkToProduct:1, productLinkScreenshot:1, productDescription:1}});
+				media.linkToProduct = null;
+				media.productLinkScreenshot = null;
+				media.productDescription = null;
+				media.isMatchedWithProduct = false;
+				media.save();
 			});
 		}
 	  }
