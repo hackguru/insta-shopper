@@ -145,6 +145,7 @@ router.delete('/:mediaId', function(req, res, next) {
 		if(!err && media){
 			req.db.Like.remove({'media':media});
 			req.db.Open.remove({'media':media});
+			res.json({ 'status': 'ok' });
 		} else {
 			res.status(401).json({ error: 'unauthorized user or could not find any records' });
 		}
