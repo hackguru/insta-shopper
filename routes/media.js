@@ -28,7 +28,7 @@ router.post('/matchScreenShot/:mediaId', function(req, res, next) {
 					//Deleting old image
 					var uri = url.parse(previousUrl);
 
-					if(uri){
+					if(uri.hostname && uri.hostname){
 						var params = {
 						  Bucket: uri.hostname.split(".")[0],
 						  Delete: {
@@ -102,7 +102,7 @@ router.post('/match/:mediaId', function(req, res, next) {
 
 				var uri = url.parse(ssUrl);
 
-				if(uri){
+				if(uri.hostname && uri.hostname){
 					var params = {
 					  Bucket: uri.hostname.split(".")[0],
 					  Delete: {
@@ -159,7 +159,7 @@ router.delete('/:mediaId', function(req, res, next) {
 			if(media.productLinkScreenshot && media.productLinkScreenshot != ""){
 				var uri = url.parse(media.productLinkScreenshot);
 
-				if(uri){
+				if(uri.hostname && uri.path){
 					var params = {
 					  Bucket: uri.hostname.split(".")[0],
 					  Delete: {
