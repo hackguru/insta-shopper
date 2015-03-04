@@ -100,6 +100,10 @@ router.post('/match/:mediaId', function(req, res, next) {
 				media.isMatchedWithProduct = false;
 				media.save();
 
+				req.db.Like.find({'media':media}).remove().exec();
+				req.db.Open.find({'media':media}).remove().exec();
+
+
 				var uri = url.parse(ssUrl);
 
 				if(uri.hostname && uri.hostname){
@@ -153,8 +157,8 @@ router.delete('/:mediaId', function(req, res, next) {
 	}
 	req.db.Media.findOneAndRemove(findQuery, function(err, media) {
 		if(!err && media){
-			req.db.Like.remove({'media':media});
-			req.db.Open.remove({'media':media});
+			req.db.Like.find({'media':media}).remove().exec();
+			req.db.Open.find({'media':media}).remove().exec();
 
 			if(media.productLinkScreenshot && media.productLinkScreenshot != ""){
 				var uri = url.parse(media.productLinkScreenshot);
