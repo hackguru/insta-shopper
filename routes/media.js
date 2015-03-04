@@ -141,11 +141,12 @@ router.delete('/:mediaId', function(req, res, next) {
 	if(!req.user.isAdmin){
 		findQuery.owner = req.user;
 	}
-	req.db.Media.findOneAndRemove(findQuery, function(err, media) {
+	req.db.Media.findOne(findQuery, function(err, media) {
 		if(!err && media){
 			req.db.Like.remove({'media':media});
 			req.db.Open.remove({'media':media});
 
+			console.log(media.linkToProduct);
 			if(media.linkToProduct && media.linkToProduct != ""){
 				var uri = url.parse(media.linkToProduct);
 
@@ -164,7 +165,9 @@ router.delete('/:mediaId', function(req, res, next) {
 				  if (err) console.log(err, err.stack); // an error occurred
 				});				
 			}
-			
+
+			media.remove();
+
 			res.json({ 'status': 'ok' });
 		} else {
 			res.status(401).json({ error: 'unauthorized user or could not find any records' });
