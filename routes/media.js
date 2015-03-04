@@ -70,8 +70,6 @@ router.post('/match/:mediaId', function(req, res, next) {
 		updateObj["linkToProduct"] = req.body.linkToProduct;
 		if(req.body.linkToProduct===""){
 			updateObj["isMatchedWithProduct"] = false;
-			updateObj["productDescription"] = undefined;
-			updateObj["linkToProduct"] = undefined;
 		} else {
 			updateObj["isMatchedWithProduct"] = true;		
 		}
