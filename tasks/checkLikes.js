@@ -17,7 +17,7 @@ var db = {
 	Like: connection.model('Like', models.Like, 'likes')
 }
 setInterval(function(){
-	console.log('starting new run of task');
+	// console.log('starting new run of task');
 	db.User
 	.find({ $or: [ { type: "buyer" }, { type: "both" } ], buyerToken: { $exists: true } })
 	.sort({'lastQueried': 'asc'})
@@ -27,10 +27,10 @@ setInterval(function(){
 			instagram.use({ access_token: user.buyerToken });
 			instagram.user_self_liked({ count:Config.get("WORKER_RUN_INTERVAL_SECONDS")/*assume users do one like persecond*/ },
 			function(err, medias, pagination, remaining, limit) {
-				console.log(user.username + " has " + remaining + " remaining insta calls left out of " + limit);
+				// console.log(user.username + " has " + remaining + " remaining insta calls left out of " + limit);
 				if(!err){
-					console.log("most recent likes for " + user.username + ":");
-					console.log(medias);
+					// console.log("most recent likes for " + user.username + ":");
+					// console.log(medias);
 					user.lastQueried = Date.now();
 					user.save();
 					if(medias.length){
@@ -38,13 +38,13 @@ setInterval(function(){
 						db.Media.find({instaId: { $in: allMediaInstaIds }, isMatchedWithProduct : true } , function (err, mediasFromDB) {
 							//gettting what we should exclude
 							if(!err){
-								console.log("recent likes for user " + user.username + " that is in our db");
-								console.log(mediasFromDB);
+								// console.log("recent likes for user " + user.username + " that is in our db");
+								// console.log(mediasFromDB);
 								db.Like.find( {media: { $in: mediasFromDB}, likedBy:user }, function(err, likesToExclude){
 									if(!err){
 										var mediaIdsToExclude = likesToExclude.map(function(value){ return value.media.toString()})
-										console.log("likes (instaIds) to exclude for user " + user.username);
-										console.log(mediaIdsToExclude);
+										// console.log("likes (instaIds) to exclude for user " + user.username);
+										// console.log(mediaIdsToExclude);
 				 						mediasFromDB.forEach(function(media){
 				 							if(mediaIdsToExclude.indexOf(media._id.toString())>=0){
 				 								return;
@@ -83,8 +83,8 @@ setInterval(function(){
 				     								function (error, response, body) {
 				     									if (!error && response.statusCode == 200 && body.success > 0 /*at least one device got it*/) {
 			    			     							//Saving likes to db
-			    			     							console.log(body);
-			    			     							console.log("Remaining api calls per hour for this user: " + remaining);
+			    			     							// console.log(body);
+			    			     							// console.log("Remaining api calls per hour for this user: " + remaining);
 			    			     							if(body.canonical_ids) {
 			    			     								body.results.forEach(function(value,index){
 			    			     									if(value.registration_id){
@@ -103,10 +103,10 @@ setInterval(function(){
 							     								});
 							     								user.save();	     								
 							     							}
-			    			     							console.log("BODY:");
-			    			     							console.log(body);
-			    			     							console.log("ERROR:");
-			    			     							console.log(error);
+			    			     							// console.log("BODY:");
+			    			     							// console.log(body);
+			    			     							// console.log("ERROR:");
+			    			     							// console.log(error);
 			    			     						}
 			    			     					});			     								
 												}
@@ -146,7 +146,7 @@ setInterval(function(){
 				} else {
 					console.log(err);
 					if(err.code == 400){
-						console.log("removing token");
+						// console.log("removing token");
 						user.buyerToken = undefined;
 						user.save();
 					}

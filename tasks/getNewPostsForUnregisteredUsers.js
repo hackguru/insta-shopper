@@ -16,7 +16,7 @@ var db = {
 	Media: connection.model('Media', models.Media, 'medias')
 }
 setInterval(function(){
-	console.log('starting new run of updating unregistered brands posts');
+	// console.log('starting new run of updating unregistered brands posts');
 	db.User
 	.find({ isAdminManaged: true }, function(err, users) {
 		users.forEach(function(user){
@@ -66,8 +66,8 @@ setInterval(function(){
 									  			    	if(!err){
 									  			    		if(created){
 										  			    		toBeSavedMedia.save();
-										  			    		console.log("Added new media");
-										  			    		console.log(toBeSavedMedia);
+										  			    		// console.log("Added new media");
+										  			    		// console.log(toBeSavedMedia);
 
 										  			    		// push notification to admins
 										  			    		db.User.find({isAdmin: true}, function(err,users){
@@ -91,7 +91,7 @@ setInterval(function(){
 																				},
 																				function (error, response, body) {
 																				  if (!error && response.statusCode == 200 && body.success > 0 /*at least one device got it*/) {
-																				    console.log(body);
+																				    // console.log(body);
 																				    //TODO: refactor this between two apis
 													     							if(body.canonical_ids) {
 													     								body.results.forEach(function(value,index){
@@ -111,10 +111,10 @@ setInterval(function(){
 													     								});
 													     								adminUser.save();	     								
 													     							}
-													     							console.log("BODY:");
-													     							console.log(body);
-													     							console.log("ERROR:");
-													     							console.log(error);
+													     							// console.log("BODY:");
+													     							// console.log(body);
+													     							// console.log("ERROR:");
+													     							// console.log(error);
 																					// We pbbly have to redo TODO!
 																				  }
 																				});	  			    			
