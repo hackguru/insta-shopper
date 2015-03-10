@@ -4,17 +4,13 @@ Config.argv()
 		.env()
 		.file({ file: 'config.json' });
 var instagram = require('instagram-node').instagram();
-var apn = require('apn');
 var mongoose = require('mongoose');
-var request = require('request');
 var models = require('../models');
 var connection = mongoose.createConnection(Config.get("Db_CONNECTION_STRING"));
 connection.on('error', console.error.bind(console,'connection error:'));
 connection.once('open', function () { console.info('connected to database') });
 var db = {
 	User: connection.model('User', models.User, 'users'),
-	Media: connection.model('Media', models.Media, 'medias'),
-	Like: connection.model('Like', models.Like, 'likes')
 }
 setInterval(function(){
 	// console.log('starting new run of task');
