@@ -192,6 +192,10 @@ var User = new Schema({
     type: Date,
     default: Date.now
   },
+  lastQueriedForFollowers : {
+    type: Date,
+    default: null    
+  },
   lastQueried : {
     type: Date,
     default: null    
@@ -215,7 +219,8 @@ var User = new Schema({
   buyerRegisterationIds:{
     androidIds : [String],
     iosIds: [String]
-  }
+  },
+  followsInstaIds: [String]
 });
 
 User.pre('save', autoUpdateTimeStamp);
