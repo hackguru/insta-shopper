@@ -149,6 +149,10 @@ router.get('/:userId/likedMedias', function(req, res, next) {
 });
 
 router.get('/:userId/postedMedias', function(req, res, next) {
+	if(!req.user || req.user._id != req.params.userId){
+		res.status(401).json({ error: 'unauthorized user' });
+		return;
+	}
 	var count = req.query.count || 0;
 	var startDate = (req.query.startDate) ? Date.parse(req.query.startDate) : undefined;
 	var endDate = (req.query.endDate) ? Date.parse(req.query.endDate) : undefined;
@@ -209,6 +213,45 @@ router.get('/:userId/postedMedias', function(req, res, next) {
 					});
 	}
 });
+
+router.get('/:userId/matchedMedia', function(req, res, next) {
+	var count = req.query.count || 0;
+	var startDate = (req.query.startDate) ? Date.parse(req.query.startDate) : undefined;
+	var endDate = (req.query.endDate) ? Date.parse(req.query.endDate) : undefined;
+	var createdDateQuery = {};
+	if(startDate && endDate){
+		createdDateQuery['$lte'] = endDate;
+		createdDateQuery['$gte'] = startDate;
+	} else  if (startDate && !endDate){
+		createdDateQuery['$gt'] = startDate;
+	} else if (!startDate && endDate){
+		createdDateQuery['$lt'] = endDate;
+		count = count || 30;
+	} else {
+		count = count || 30;
+		createdDateQuery['$lte'] = Date.now();
+	}
+
+	var findQuery = {};
+	findQuery.created = createdDateQuery;
+	findQuery.owner = req.params.userId;
+	findQuery.isMatchedWithProduct = true;
+	req.db.Media.find(findQuery)
+				.sort({'created': 'desc'})
+				.limit(count)
+				// TODO:  remove sensative stuff from user
+				.populate({ path: 'owner' })
+				.exec(function(err, medias) {
+					if(!err){
+						res.json({
+							results: medias
+						});
+					} else {
+						res.status(404).json({ error: 'could not find any records' });
+					}
+				});
+});
+
 
 router.get('/:userId/recommendedMerchants', function(req, res, next) {
 	if(!req.user || req.user._id != req.params.userId){
