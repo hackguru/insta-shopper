@@ -1,4 +1,4 @@
 require('./checkLikes');
-require('./getNewPostsForUnregisteredUsers')
-
+require('./getNewPostsForUnregisteredUsers');
+require('./updateFollow.js');
 

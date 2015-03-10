@@ -49,4 +49,4 @@ setInterval(function(){
  			});
 		});
 	});
-}, Config.get("WORKER_RUN_INTERVAL_SECONDS")*1000);
+}, Config.get("UPDATE_FOLLOW_RUN_INTERVAL_SECONDS")*1000);
