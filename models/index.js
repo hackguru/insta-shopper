@@ -52,7 +52,13 @@ var Like = new Schema ({
 });
 
 Like.plugin(findOrCreate);
-Like.plugin(deepPopulate);
+Like.plugin(deepPopulate, {
+  populate: {
+    'media.owner': {
+      select: '-followsInstaIds'
+    }
+  }
+});
 
 var Media = new Schema ({
   caption: {

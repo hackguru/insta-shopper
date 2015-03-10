@@ -181,7 +181,7 @@ router.get('/:userId/postedMedias', function(req, res, next) {
 							.sort({'created': 'desc'})
 							.limit(count)
 							// TODO:  remove sensative stuff from user
-							.populate({ path: 'owner' })
+							.populate({ path: 'owner', select: '-followsInstaIds' })
 							.exec(function(err, medias) {
 								if(!err){
 									res.json({
@@ -201,7 +201,7 @@ router.get('/:userId/postedMedias', function(req, res, next) {
 					.sort({'created': 'desc'})
 					.limit(count)
 					// TODO:  remove sensative stuff from user
-					.populate({ path: 'owner' })
+					.populate({ path: 'owner', select: '-followsInstaIds' })
 					.exec(function(err, medias) {
 						if(!err){
 							res.json({
@@ -240,7 +240,7 @@ router.get('/:userId/matchedMedia', function(req, res, next) {
 				.sort({'created': 'desc'})
 				.limit(count)
 				// TODO:  remove sensative stuff from user
-				.populate({ path: 'owner' })
+				.populate({ path: 'owner', select: '-followsInstaIds'})
 				.exec(function(err, medias) {
 					if(!err){
 						res.json({
@@ -258,7 +258,9 @@ router.get('/:userId/recommendedMerchants', function(req, res, next) {
 		res.status(401).json({ error: 'unauthorized user' });
 		return;
 	}
-	req.db.User.find({ $or: [ { type: "merchant" }, { type: "both" } ], canBeFeatured: true }, function(err, merchants) {
+	req.db.User.find({ $or: [ { type: "merchant" }, { type: "both" } ], canBeFeatured: true })
+			   .select('-followsInstaIds')
+			   .exec(function(err, merchants) {
 		if(!err){
 			//TODO REMOVE Sensative info
 			res.json({
