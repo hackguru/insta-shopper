@@ -252,6 +252,52 @@ router.get('/:userId/matchedMedia', function(req, res, next) {
 				});
 });
 
+router.get('/:userId/followsMedia', function(req, res, next) {
+	// TODO AUTHENTICATION
+
+
+	var count = req.query.count || 0;
+	var startDate = (req.query.startDate) ? Date.parse(req.query.startDate) : undefined;
+	var endDate = (req.query.endDate) ? Date.parse(req.query.endDate) : undefined;
+	var createdDateQuery = {};
+	if(startDate && endDate){
+		createdDateQuery['$lte'] = endDate;
+		createdDateQuery['$gte'] = startDate;
+	} else  if (startDate && !endDate){
+		createdDateQuery['$gt'] = startDate;
+	} else if (!startDate && endDate){
+		createdDateQuery['$lt'] = endDate;
+		count = count || 30;
+	} else {
+		count = count || 30;
+		createdDateQuery['$lte'] = Date.now();
+	}
+
+	req.db.User.findOne(req.params.userId,function(err, user){
+		if(!err && user){
+			var findQuery = {};
+			findQuery.created = createdDateQuery;
+			findQuery.isMatchedWithProduct = true;
+			req.db.Media.find(findQuery)
+						.sort({'created': 'desc'})
+						.limit(count)
+						// TODO:  remove sensative stuff from user
+						.populate({ path: 'owner', select: '-followsInstaIds', match: { instId: { $in: user.followsInstaIds } }})
+						.exec(function(err, medias) {
+							if(!err){
+								res.json({
+									results: medias
+								});
+							} else {
+								res.status(404).json({ error: 'could not find any records' });
+							}
+						});			
+		} else  {
+			res.status(404).json({ error: 'could not find any records' });
+		}
+	});
+});
+
 
 router.get('/:userId/recommendedMerchants', function(req, res, next) {
 	if(!req.user || req.user._id != req.params.userId){

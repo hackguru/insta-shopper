@@ -95,7 +95,10 @@ function getApiRequestUser(req, res, next){
     var queryObject = {};
     queryObject[typeKey+'.'+deviceKey] = req.reqId;
     queryObject['$or'] = [ { type: req.userType }, { type: "both" } ];
-    req.db.User.findOne( queryObject,  function(err, user){
+    queryObject
+    req.db.User.findOne( queryObject )
+               .select('-followsInstaIds')
+               .exec(function(err, user){
       if(!err && user){
         req.user = user; 
         return next();
