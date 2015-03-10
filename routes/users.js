@@ -172,7 +172,7 @@ router.get('/:userId/postedMedias', function(req, res, next) {
 
 	var findQuery = {};
 	findQuery.created = createdDateQuery;
-	if (req.user.isAdmin && req.user._id === req.params.userId) {
+	if (req.user.isAdmin) {
 		req.db.User.find({ isAdminManaged: true }, function(err, users) {
 			if(!err && users){
 				users.push(req.user);
