@@ -275,23 +275,31 @@ router.get('/:userId/followsMedia', function(req, res, next) {
 
 	req.db.User.findOne(req.params.userId,function(err, user){
 		if(!err && user){
-			var findQuery = {};
-			findQuery.created = createdDateQuery;
-			findQuery.isMatchedWithProduct = true;
-			req.db.Media.find(findQuery)
-						.sort({'created': 'desc'})
-						.limit(count)
-						// TODO:  remove sensative stuff from user
-						.populate({ path: 'owner', select: '-followsInstaIds', match: { instId: { $in: user.followsInstaIds } }})
-						.exec(function(err, medias) {
-							if(!err){
-								res.json({
-									results: medias
-								});
-							} else {
-								res.status(404).json({ error: 'could not find any records' });
-							}
-						});			
+			req.db.User.find( { instId: { $in: user.followsInstaIds } },function(err, follows){
+				if(!err && follows){
+					var findQuery = {};
+					findQuery.created = createdDateQuery;
+					findQuery.isMatchedWithProduct = true;
+					findQuery.owner = { $in: follows };
+					req.db.Media.find(findQuery)
+								.sort({'created': 'desc'})
+								.limit(count)
+								// TODO:  remove sensative stuff from user
+								.populate({ path: 'owner', select: '-followsInstaIds' })
+								.exec(function(err, medias) {
+									if(!err){
+										res.json({
+											results: medias
+										});
+									} else {
+										res.status(404).json({ error: 'could not find any records' });
+									}
+								});			
+
+				} else {
+					res.status(404).json({ error: 'could not find any records' });
+				}
+			});
 		} else  {
 			res.status(404).json({ error: 'could not find any records' });
 		}
