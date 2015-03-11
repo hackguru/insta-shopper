@@ -249,10 +249,10 @@ router.get('/:userId/matchedMedia', function(req, res, next) {
 });
 
 router.get('/:userId/followsMedia', function(req, res, next) {
-	if(!req.user || req.user._id != req.params.userId){
-		res.status(401).json({ error: 'unauthorized user' });
-		return;
-	}
+	// if(!req.user || req.user._id != req.params.userId){
+	// 	res.status(401).json({ error: 'unauthorized user' });
+	// 	return;
+	// }
 	var count = req.query.count || 0;
 	var startDate = (req.query.startDate) ? Date.parse(req.query.startDate) : undefined;
 	var endDate = (req.query.endDate) ? Date.parse(req.query.endDate) : undefined;
