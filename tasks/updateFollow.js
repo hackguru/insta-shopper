@@ -31,13 +31,7 @@ setInterval(function(){
 					if(!user.followsInstaIds) {
 						user.followsInstaIds = [];
 					}
-					if(user.username === 'srmehr'){
-						debugger;
-					}
 					follows.forEach(function(newFollow){
-						if(user.username === 'srmehr'){
-							debugger;
-						}
 						if (user.followsInstaIds.indexOf(""+newFollow.id) >= 0 ){
 							return;
 						}
