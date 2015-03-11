@@ -135,7 +135,6 @@ router.get('/:userId/likedMedias', function(req, res, next) {
 	req.db.Like.find({likedBy : req.params.userId, likedDate: createdDateQuery})
 				.sort({'likedDate': 'desc'})
 				.limit(count)
-				// TODO:  remove sensative stuff from user
 				.deepPopulate('media.owner')
 				.exec(function(err, medias) {
 					if(!err){
@@ -180,8 +179,7 @@ router.get('/:userId/postedMedias', function(req, res, next) {
 				req.db.Media.find(findQuery)
 							.sort({'created': 'desc'})
 							.limit(count)
-							// TODO:  remove sensative stuff from user
-							.populate({ path: 'owner', select: '-followsInstaIds' })
+							.populate({ path: 'owner', select: '-followsInstaIds -r -buyerRegisterationIds -merchantRegisterationIds -token -buyerToken -merchantToken -isAdmin' })
 							.exec(function(err, medias) {
 								if(!err){
 									res.json({
@@ -200,8 +198,7 @@ router.get('/:userId/postedMedias', function(req, res, next) {
 		req.db.Media.find(findQuery)
 					.sort({'created': 'desc'})
 					.limit(count)
-					// TODO:  remove sensative stuff from user
-					.populate({ path: 'owner', select: '-followsInstaIds' })
+					.populate({ path: 'owner', select: '-followsInstaIds -r -buyerRegisterationIds -merchantRegisterationIds -token -buyerToken -merchantToken -isAdmin' })
 					.exec(function(err, medias) {
 						if(!err){
 							res.json({
@@ -239,8 +236,7 @@ router.get('/:userId/matchedMedia', function(req, res, next) {
 	req.db.Media.find(findQuery)
 				.sort({'created': 'desc'})
 				.limit(count)
-				// TODO:  remove sensative stuff from user
-				.populate({ path: 'owner', select: '-followsInstaIds'})
+				.populate({ path: 'owner', select: '-followsInstaIds -r -buyerRegisterationIds -merchantRegisterationIds -token -buyerToken -merchantToken -isAdmin'})
 				.exec(function(err, medias) {
 					if(!err){
 						res.json({
@@ -284,8 +280,7 @@ router.get('/:userId/followsMedia', function(req, res, next) {
 					req.db.Media.find(findQuery)
 								.sort({'created': 'desc'})
 								.limit(count)
-								// TODO:  remove sensative stuff from user
-								.populate({ path: 'owner', select: '-followsInstaIds' })
+								.populate({ path: 'owner', select: '-followsInstaIds -r -buyerRegisterationIds -merchantRegisterationIds -token -buyerToken -merchantToken -isAdmin' })
 								.exec(function(err, medias) {
 									if(!err){
 										res.json({
@@ -313,10 +308,9 @@ router.get('/:userId/recommendedMerchants', function(req, res, next) {
 		return;
 	}
 	req.db.User.find({ $or: [ { type: "merchant" }, { type: "both" } ], canBeFeatured: true })
-			   .select('-followsInstaIds')
+			   .select('-followsInstaIds -r -buyerRegisterationIds -merchantRegisterationIds -token -buyerToken -merchantToken -isAdmin')
 			   .exec(function(err, merchants) {
 		if(!err){
-			//TODO REMOVE Sensative info
 			res.json({
 				results: merchants
 			});
@@ -347,6 +341,7 @@ router.get('/merchant/:userId', function(req, res, next) {
 	req.db.User.findOne({_id : req.params.userId, $or: [ { type: "merchant" }, { type: "both" } ] }, function(err, user) {
 		if(!err){
 			// For security reasons
+			// TODO
 			delete user.buyerRegisterationIds;
 			delete user.merchantRegisterationIds;
 			res.json(user);

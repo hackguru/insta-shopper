@@ -55,7 +55,7 @@ Like.plugin(findOrCreate);
 Like.plugin(deepPopulate, {
   populate: {
     'media.owner': {
-      select: '-followsInstaIds'
+      select: '-followsInstaIds -r -buyerRegisterationIds -merchantRegisterationIds -token -buyerToken -merchantToken -isAdmin'
     }
   }
 });
