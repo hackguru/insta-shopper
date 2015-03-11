@@ -31,11 +31,12 @@ setInterval(function(){
 					if(!user.followsInstaIds) {
 						user.followsInstaIds = [];
 					}
+					debugger;
 					follows.forEach(function(newFollow){
-						if (user.followsInstaIds.indexOf(newFollow.id) >= 0 ){
+						if (user.followsInstaIds.indexOf(""+newFollow.id) >= 0 ){
 							return;
 						}
-						user.followsInstaIds.push(newFollow.id);
+						user.followsInstaIds.push(""+newFollow.id);
 					});
 					user.save();
 				} else {
