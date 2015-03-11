@@ -272,6 +272,7 @@ router.get('/:userId/followsMedia', function(req, res, next) {
 
 	req.db.User.findOne(req.params.userId,function(err, user){
 		if(!err && user){
+			console.log(user.followsInstaIds);
 			req.db.User.find( { instaId: { $in: user.followsInstaIds } , $or: [ { type: "merchant" }, { type: "both" } ] },function(err, follows){
 				if(!err && follows){
 					var findQuery = {};
