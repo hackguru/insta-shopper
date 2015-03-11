@@ -270,7 +270,7 @@ router.get('/:userId/followsMedia', function(req, res, next) {
 		createdDateQuery['$lte'] = Date.now();
 	}
 
-	req.db.User.findOne(req.params.userId,function(err, user){
+	req.db.User.findOne({_id:req.params.userId},function(err, user){
 		if(!err && user){
 			console.log(user.followsInstaIds);
 			req.db.User.find( { instaId: { $in: user.followsInstaIds } , $or: [ { type: "merchant" }, { type: "both" } ] },function(err, follows){
