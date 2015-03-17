@@ -398,7 +398,6 @@ router.post('/newUnregisteredMerchant/:username', function(req, res, next) {
 			req.instagram.use({ access_token: token });
 			req.instagram.user_search(req.params.username, { count: 1 }, function(err, userFromInsta, pagination, remaining, limit) {
 				userFromInsta = userFromInsta[0];
-				console.log(userFromInsta.username + " has " + remaining + " remaining insta calls left out of " + limit);
 				if(!err && userFromInsta){
 					console.log(userFromInsta);
 					var newUser = {

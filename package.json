@@ -25,6 +25,14 @@
     "apn" : "*",
     "mongoose-deep-populate" : "*",
     "mongoose-random" : "*",
-    "nodemailer" : "*"
+    "nodemailer" : "*",
+    "xpath" : "*",
+    "parse5" : "*",
+    "xmlserializer" : "*",
+    "xmldom" : "*",
+    "phantom" : "*",
+    "knox" : "*",
+    "node-uuid" : "*",
+    "mkdirp" : "*"
   }
 }
