@@ -92,8 +92,3 @@ var getMobileScreenShot = function(url, cb){
 exports.findLinkInLikeToBuy = findLinkInLikeToBuy;
 exports.getMobileScreenShot = getMobileScreenShot;
 
-
-findLinkInLikeToBuy('victoriassecret','942118557298873693_3416684',function(result){
-	console.log(result);
-	getMobileScreenShot(result);
-});
