@@ -81,7 +81,7 @@ setInterval(function(){
 																			instaShopperUtils.getMobileScreenShot(result,function(ssUrl){
 																				if(ssUrl != null){
 																				  	toBeSavedMedia.productLinkScreenshot = ssUrl;
-																				  	media.save();
+																				  	toBeSavedMedia.save();
 																				}
 																			});
 																	});
