@@ -74,7 +74,7 @@ setInterval(function(){
 
 										  			    		if(user.website.indexOf('like2b.uy') >= 0){
 											  			    		instaShopperUtils.findLinkInLikeToBuy(user.username,media.id,function(result){
-											  			    			if(result != null)
+											  			    			if(result != null){
 																			toBeSavedMedia.linkToProduct = result;
 																			toBeSavedMedia.isMatchedWithProduct = true;
 																			toBeSavedMedia.save();
@@ -84,6 +84,7 @@ setInterval(function(){
 																				  	toBeSavedMedia.save();
 																				}
 																			});
+																		}
 																	});
 										  			    		} else {
 											  			    		db.User.find({isAdmin: true}, function(err,users){
