@@ -399,7 +399,7 @@ router.post('/newUnregisteredMerchant/:username', function(req, res, next) {
 			req.instagram.user_search(req.params.username, { count: 1 }, function(err, userFromInsta, pagination, remaining, limit) {
 				userFromInsta = userFromInsta[0];
 				if(!err && userFromInsta){
-					req.instagram.ig.user(userFromInsta.id, function(err, result, remaining, limit) {
+					req.instagram.user(userFromInsta.id, function(err, result, remaining, limit) {
 						if(err){
 							console.log(err);
 							return;
