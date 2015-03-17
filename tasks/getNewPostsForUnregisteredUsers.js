@@ -73,7 +73,7 @@ setInterval(function(){
 										  			    		// push notification to admins
 
 										  			    		if(user.website.indexOf('like2b.uy') >= 0){
-											  			    		instaShopperUtils.findLinkInLikeToBuy(user.instaId,media.id,function(result){
+											  			    		instaShopperUtils.findLinkInLikeToBuy(user.username,media.id,function(result){
 											  			    			if(result != null)
 																			toBeSavedMedia.linkToProduct = result;
 																			toBeSavedMedia.isMatchedWithProduct = true;
