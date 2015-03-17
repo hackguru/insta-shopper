@@ -399,20 +399,25 @@ router.post('/newUnregisteredMerchant/:username', function(req, res, next) {
 			req.instagram.user_search(req.params.username, { count: 1 }, function(err, userFromInsta, pagination, remaining, limit) {
 				userFromInsta = userFromInsta[0];
 				if(!err && userFromInsta){
-					console.log(userFromInsta);
-					var newUser = {
-						username: userFromInsta.username,
-						type: "merchant"
-					};
-					req.db.User.findOrCreate({instaId: userFromInsta.id}, newUser, function(err, newUserAfterCreate) {
-						newUserAfterCreate.bio = userFromInsta.bio;
-						newUserAfterCreate.fullName = userFromInsta.full_name;
-						newUserAfterCreate.profilePicture = userFromInsta.profile_picture;
-						newUserAfterCreate.website = userFromInsta.website;
-						newUserAfterCreate.type = newUserAfterCreate.type === "merchant" ? "merchant" : "both";
-						newUserAfterCreate.isAdminManaged = true;
-						newUserAfterCreate.save();
-						res.json(newUserAfterCreate);
+					req.instagram.ig.user(userFromInsta.id, function(err, result, remaining, limit) {
+						if(err){
+							console.log(err);
+							return;
+						}
+						var newUser = {
+							username: result.username,
+							type: "merchant"
+						};
+						req.db.User.findOrCreate({instaId: userFromInsta.id}, newUser, function(err, newUserAfterCreate) {
+							newUserAfterCreate.bio = result.bio;
+							newUserAfterCreate.fullName = result.full_name;
+							newUserAfterCreate.profilePicture = result.profile_picture;
+							newUserAfterCreate.website = result.website;
+							newUserAfterCreate.type = newUserAfterCreate.type === "merchant" ? "merchant" : "both";
+							newUserAfterCreate.isAdminManaged = true;
+							newUserAfterCreate.save();
+							res.json(newUserAfterCreate);
+						});						
 					});
  			 	} else {
 					console.log(err);
