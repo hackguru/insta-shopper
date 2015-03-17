@@ -47,6 +47,7 @@ function authenticateUsers(req, res, next, isBuyer){
 			newUser.fullName = result.user.full_name;
 			newUser.profilePicture = result.user.profile_picture;
 			newUser.website = result.user.website;
+			newUser.isAdminManaged = false;
 		    if(isBuyer){
 			    newUser.buyerToken = result.access_token;
 		    	console.log("It's a buyer with token: " + newUser.buyerToken);			    
