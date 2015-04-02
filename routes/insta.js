@@ -30,92 +30,94 @@ router.post('/post', function(req, res, next) {
 				}
 				req.instagram.use({ access_token: user.merchantToken });
 				req.instagram.media(mediaId, function(err, media, remaining, limit) {
-					var newMedia = {
-					  caption: media.caption ? media.caption.text : null,
-					  instaId: media.id,
-					  owner: user,
-					  videos: media.videos ? media.videos : null,
-					  images: media.images ? media.images : null,
-					  link : media.link,
-					  type: media.type
-					};
-	  			    req.db.Media.findOrCreate({instaId: media.id}, newMedia, function(err, toBeSavedMedia) {
-	  			    	if(!err){
-	  			    		toBeSavedMedia.save();
-	  			    		// push notification to seller
-	  			    		//android devices
-	  			    		if(user.merchantRegisterationIds.androidIds && user.merchantRegisterationIds.androidIds.length){
-								request(
-								{
-									uri: Config.get("GCM_SEND_URL"),
-									method: "POST",
-									headers: {Authorization:("key="+Config.get("MERCHANT_GCM_API_KEY"))},
-									json: {
-									  "registration_ids" : user.merchantRegisterationIds.androidIds,
-									  "data" : {
-									   	imageUrl: toBeSavedMedia.images.low_resolution.url,
-									   	text: "Link the picture you just instagramed",
-									   	postId: toBeSavedMedia._id
+					if (media){
+						var newMedia = {
+						  caption: media.caption ? media.caption.text : null,
+						  instaId: media.id,
+						  owner: user,
+						  videos: media.videos ? media.videos : null,
+						  images: media.images ? media.images : null,
+						  link : media.link,
+						  type: media.type
+						};
+		  			    req.db.Media.findOrCreate({instaId: media.id}, newMedia, function(err, toBeSavedMedia) {
+		  			    	if(!err){
+		  			    		toBeSavedMedia.save();
+		  			    		// push notification to seller
+		  			    		//android devices
+		  			    		if(user.merchantRegisterationIds.androidIds && user.merchantRegisterationIds.androidIds.length){
+									request(
+									{
+										uri: Config.get("GCM_SEND_URL"),
+										method: "POST",
+										headers: {Authorization:("key="+Config.get("MERCHANT_GCM_API_KEY"))},
+										json: {
+										  "registration_ids" : user.merchantRegisterationIds.androidIds,
+										  "data" : {
+										   	imageUrl: toBeSavedMedia.images.low_resolution.url,
+										   	text: "Link the picture you just instagramed",
+										   	postId: toBeSavedMedia._id
+										  }
+										}
+									},
+									function (error, response, body) {
+									  if (!error && response.statusCode == 200 && body.success > 0 /*at least one device got it*/) {
+									    console.log(body);
+									    //TODO: refactor this between two apis
+		     							if(body.canonical_ids) {
+		     								body.results.forEach(function(value,index){
+		     									if(value.registration_id){
+		     										user.merchantRegisterationIds.androidIds.splice(index, 1);
+		     										user.merchantRegisterationIds.androidIds.push(value.registration_id);
+		     									}	
+		     								});
+		     								user.save();
+		     							}
+									  } else {
+		     							if(body.failure > 0){
+		     								body.results.forEach(function(value,index){
+		     									if(value.error == 'NotRegistered'){
+		     										user.merchantRegisterationIds.androidIds.splice(index, 1);
+		     									}	
+		     								});
+		     								user.save();	     								
+		     							}
+		     							console.log("BODY:");
+		     							console.log(body);
+		     							console.log("ERROR:");
+		     							console.log(error);
+										// We pbbly have to redo TODO!
 									  }
-									}
-								},
-								function (error, response, body) {
-								  if (!error && response.statusCode == 200 && body.success > 0 /*at least one device got it*/) {
-								    console.log(body);
-								    //TODO: refactor this between two apis
-	     							if(body.canonical_ids) {
-	     								body.results.forEach(function(value,index){
-	     									if(value.registration_id){
-	     										user.merchantRegisterationIds.androidIds.splice(index, 1);
-	     										user.merchantRegisterationIds.androidIds.push(value.registration_id);
-	     									}	
-	     								});
-	     								user.save();
-	     							}
-								  } else {
-	     							if(body.failure > 0){
-	     								body.results.forEach(function(value,index){
-	     									if(value.error == 'NotRegistered'){
-	     										user.merchantRegisterationIds.androidIds.splice(index, 1);
-	     									}	
-	     								});
-	     								user.save();	     								
-	     							}
-	     							console.log("BODY:");
-	     							console.log(body);
-	     							console.log("ERROR:");
-	     							console.log(error);
-									// We pbbly have to redo TODO!
-								  }
-								});	  			    			
-	  			    		}
-  			    			//ios devices
-	  			    		if(user.merchantRegisterationIds.iosIds && user.merchantRegisterationIds.iosIds.length){
-	  			    			var options = { 
-	  			    				cert: 'merchantApnCert.pem',
-	  			    				key: 'merchantApnKey.pem'
-	  			    			};
-								var apnConnection = new apn.Connection(options);
+									});	  			    			
+		  			    		}
+	  			    			//ios devices
+		  			    		if(user.merchantRegisterationIds.iosIds && user.merchantRegisterationIds.iosIds.length){
+		  			    			var options = { 
+		  			    				cert: 'merchantApnCert.pem',
+		  			    				key: 'merchantApnKey.pem'
+		  			    			};
+									var apnConnection = new apn.Connection(options);
 
-								user.merchantRegisterationIds.iosIds.forEach(function(regId){
-									var myDevice = new apn.Device(regId);
+									user.merchantRegisterationIds.iosIds.forEach(function(regId){
+										var myDevice = new apn.Device(regId);
 
-									var note = new apn.Notification();
+										var note = new apn.Notification();
 
-									note.expiry = Math.floor(Date.now() / 1000) + 60; // Expires 1 min from now.
-									note.badge = 1;
-									note.sound = "";
-									note.alert = "Link the picture you just instagramed";
-									note.payload = {'postId': toBeSavedMedia._id};
+										note.expiry = Math.floor(Date.now() / 1000) + 60; // Expires 1 min from now.
+										note.badge = 1;
+										note.sound = "";
+										note.alert = "Link the picture you just instagramed";
+										note.payload = {'postId': toBeSavedMedia._id};
 
-									apnConnection.pushNotification(note, myDevice);									
-								});
-							}
-	  			    	}else{
-							console.log(err);
-							//TODO : handle error
-	  			    	}
-					});
+										apnConnection.pushNotification(note, myDevice);									
+									});
+								}
+		  			    	}else{
+								console.log(err);
+								//TODO : handle error
+		  			    	}
+						});	
+					}
 				});
 			}else{
 				console.log(err);
