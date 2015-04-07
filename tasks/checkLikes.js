@@ -75,7 +75,7 @@ setInterval(function(){
 				     										"registration_ids" : user.buyerRegisterationIds.androidIds,
 				     										"data" : {
 				     											imageUrl: media.images.low_resolution.url,
-				     											text: media.productDescription || "The photo you just liked has more infromation",
+				     											text: media.productDescription || "The photo you just liked has more information",
 				     											postId: media._id
 				     										}
 				     									}
