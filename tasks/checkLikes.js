@@ -126,7 +126,7 @@ setInterval(function(){
 														note.expiry = Math.floor(Date.now() / 1000) + 60; // Expires 1 min from now.
 														note.badge = 1;
 														note.sound = "";
-														note.alert = media.productDescription  || "The photo you just liked has more infromation";
+														note.alert = media.productDescription  || "The photo you just liked has more information";
 														note.payload = {'postId': media._id};
 
 														apnConnection.pushNotification(note, myDevice);									
